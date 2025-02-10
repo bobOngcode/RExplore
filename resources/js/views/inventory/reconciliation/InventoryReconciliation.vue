@@ -13,17 +13,36 @@
           <v-card-title>
             Inventory Reconciliations
             <v-spacer></v-spacer>
-            <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line></v-text-field>
+            <v-text-field
+              v-model="search"
+              append-icon="mdi-magnify"
+              label="Search"
+              single-line
+            ></v-text-field>
             <v-spacer></v-spacer>
-            <v-autocomplete v-model="inventory_group" :items="inventory_groups" item-text="name" item-value="name"
-              label="Inventory Group" v-if="user.id === 1">
+            <v-autocomplete
+              v-model="inventory_group"
+              :items="inventory_groups"
+              item-text="name"
+              item-value="name"
+              label="Inventory Group"
+              v-if="user.id === 1"
+            >
             </v-autocomplete>
             <v-spacer></v-spacer>
           </v-card-title>
 
-          <v-data-table :headers="headers" :items="branches" :search="search" :loading="loading"
-            loading-text="Loading... Please wait" group-by="name" class="elevation-1" :expanded.sync="expanded"
-            v-if="hasPermission('inventory-recon-list')">
+          <v-data-table
+            :headers="headers"
+            :items="branches"
+            :search="search"
+            :loading="loading"
+            loading-text="Loading... Please wait"
+            group-by="name"
+            class="elevation-1"
+            :expanded.sync="expanded"
+            v-if="hasPermission('inventory-recon-list')"
+          > 
             <template v-slot:group.header="{ items, headers, toggle, isOpen, }">
               <td colspan="8">
                 <v-row>
@@ -36,7 +55,7 @@
                   </v-col>
                 </v-row>
               </td>
-              <td>
+              <td> 
                 <v-menu offset-y>
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn x-small v-bind="attrs" v-on="on" class="primary">
@@ -45,20 +64,37 @@
                     </v-btn>
                   </template>
                   <v-list class="pa-1">
-                    <v-list-item class="ma-0 pa-0" style="min-height: 25px"
-                      v-if="hasPermission('inventory-recon-create')">
+                    <v-list-item
+                      class="ma-0 pa-0"
+                      style="min-height: 25px"
+                      v-if="hasPermission('inventory-recon-create')"
+                    >
                       <v-list-item-title>
-                        <v-btn color="primary" class="mx-1" width="100px" x-small
-                          @click="openImportDialog('import', items)">
+                        <v-btn
+                          color="primary"
+                          class="mx-1"
+                          width="100px"
+                          x-small
+                          @click="openImportDialog('import', items)"
+                        >
                           <v-icon class="mr-1" x-small> mdi-import </v-icon>
                           Import
                         </v-btn>
                       </v-list-item-title>
                     </v-list-item>
-                    <v-list-item class="ma-0 pa-0" style="min-height: 25px"
-                      v-if="hasPermission('inventory-recon-sync')">
+                    <v-list-item
+                      class="ma-0 pa-0"
+                      style="min-height: 25px"
+                      v-if="hasPermission('inventory-recon-sync')"
+                    >
                       <v-list-item-title>
-                        <v-btn color="info" class="mx-1" width="100px" x-small @click="openImportDialog('sync', items)">
+                        <v-btn
+                          color="info"
+                          class="mx-1"
+                          width="100px"
+                          x-small
+                          @click="openImportDialog('sync', items)"
+                        >
                           <v-icon class="mr-1" x-small> mdi-sync </v-icon>
                           Sync
                         </v-btn>
@@ -72,10 +108,10 @@
               <tr v-for="(value, index) in item.inventory_reconciliations">
                 <td> </td>
                 <td> {{ value.user }} </td>
-                <td>
-                  <v-chip :color="value.status == 'reconciled' ? 'success' : 'error'">
-                    {{ value.status.toUpperCase() }}
-                  </v-chip>
+                <td> 
+                    <v-chip :color="value.status == 'reconciled' ? 'success' : 'error'">
+                      {{ value.status.toUpperCase() }} 
+                    </v-chip> 
                 </td>
                 <td> {{ value.inventory_type }} </td>
                 <td> {{ value.whse_code }} </td>
@@ -94,9 +130,8 @@
                       <template v-for="(list) in actionListTblRow">
                         <v-list-item class="ma-0 pa-0" style="min-height: 25px" v-if="list.hasPermission">
                           <v-list-item-title>
-                            <v-btn class="mx-1 white--text" x-small @click="callMethod(list.method, value)"
-                              width="105px" :color="list.color">
-                              <v-icon class="mr-1" x-small> {{ list.icon }} </v-icon>
+                            <v-btn class="mx-1 white--text" x-small @click="callMethod(list.method, value)" width="105px" :color="list.color">
+                              <v-icon class="mr-1" x-small> {{ list.icon}} </v-icon>
                               {{ list.title }}
                             </v-btn>
                           </v-list-item-title>
@@ -114,21 +149,39 @@
         <v-card>
           <v-card-text>
             <v-container>
-              <v-row class="fill-height" align-content="center" justify="center">
+              <v-row
+                class="fill-height"
+                align-content="center"
+                justify="center"
+              >
                 <v-col class="subtitle-1 font-weight-bold text-center mt-4" cols="12">
                   Fetching Inventory Reconciliation Data...
                 </v-col>
                 <v-col cols="6">
-                  <v-progress-linear color="primary" indeterminate rounded height="6"></v-progress-linear>
+                  <v-progress-linear
+                    color="primary"
+                    indeterminate
+                    rounded
+                    height="6"
+                  ></v-progress-linear>
                 </v-col>
               </v-row>
             </v-container>
           </v-card-text>
         </v-card>
       </v-dialog>
-      <ImportDialog :api_route="api_route" :dialog_import="dialog_import" :branch="branch" :branch_id="branch_id"
-        :databases="databases" :whse_codes="whse_codes" :action="action" :inventory_group="inventory_group"
-        @getData="getInventory" @closeImportDialog="closeImportDialog" />
+      <ImportDialog 
+        :api_route="api_route" 
+        :dialog_import="dialog_import"
+        :branch="branch"
+        :branch_id="branch_id"
+        :databases="databases"
+        :whse_codes="whse_codes"
+        :action="action"
+        :inventory_group="inventory_group"
+        @getData="getInventory"
+        @closeImportDialog="closeImportDialog"
+      />
     </div>
   </div>
 </template>
@@ -160,7 +213,7 @@ export default {
         { text: "Date Created", value: "date_created" },
         { text: "Document Date", value: "document_date" },
         { text: "Date Reconciled", value: "date_reconciled" },
-        { text: "Actions", value: "actions", sortable: false, width: "150px" },
+        { text: "Actions", value: "actions", sortable: false, width: "150px"},
       ],
       disabled: false,
       dialog: false,
@@ -220,7 +273,7 @@ export default {
           this.branches = data.branches;
           this.databases = data.databases;
           this.loading = false;
-
+          
         },
         (error) => {
           this.isUnauthorized(error);
@@ -263,7 +316,7 @@ export default {
       this.whse_codes = item[0].whse_codes;
     },
 
-    closeImportDialog() {
+    closeImportDialog() { 
       this.dialog_import = false;
     },
 
@@ -358,21 +411,14 @@ export default {
       this[method](item);
     },
 
-
-
     setPDFData() {
-
-      // PDF FILE CUSTOM
       const doc = new jsPDF({
         orientation: "portrait",
         unit: "px",
         format: "letter",
       });
 
-      // DATE
       let d = new Date();
-
-      //  MONTHS
       let months = [
         "January",
         "February",
@@ -387,28 +433,23 @@ export default {
         "November",
         "December",
       ];
-
-      // COMPLETE DATE
       let thisMonth = months[d.getMonth()];
       let lastMonth = months[d.getMonth() - 1];
       let gMonth = d.getMonth() + 1;
       let gDate = d.getDate();
       let gFYear = d.getFullYear();
 
-
       let header = "ADDESSA CORPORATION";
       let invtymemo = "INVTY MEMO#";
       let date = "Date:";
       let to = "To:";
       let from = "From:";
-
-
+  
       let invtymemo_value = this.branch_code + "-" + gFYear + "-" + gMonth;
       let date_value = thisMonth + " " + gDate + "," + gFYear;
       let bm_oic = this.bm_oic ? this.bm_oic : '';
       let to_position = "BM/OIC";
       let from_value = "Admin-Inventory Department";
-
 
       let beneath_table =
         "Please verify, reconcile and coordinate to admin for the reconciliation of the discrepancies within Five (5) days upon the receipt of this Memo.";
@@ -417,82 +458,64 @@ export default {
       let date_submitted = "Date Submitted:";
       let date_submitted_value = this.date_reconciled;
 
-
       let before_table =
         "We have reconciled your Physical Inventory Count Report versus SAP Report and we found out the following unreconciled items:";
-
 
       doc.setFontSize(7);
       doc.text(invtymemo_value, 80, 30);
 
-
       doc.setFontSize(7);
       doc.text(date_value, 80, 40);
-
 
       doc.setFontSize(7);
       doc.text(bm_oic, 80, 55);
       doc.text(to_position, 80, 60);
 
-
       doc.setFontSize(7);
       doc.text(from_value, 80, 75);
 
-
       doc.setFontSize(7);
       doc.text(before_table, 80, 118);
-
 
       doc.setFontSize(8);
       doc.setFont("", "bold");
       doc.text(header, 200, 16);
 
-
       doc.setFontSize(7);
       doc.setFont("", "bold");
       doc.text(invtymemo, 30, 30);
-
 
       doc.setFontSize(7);
       doc.setFont("", "bold");
       doc.text(date, 30, 40);
 
-
       doc.setFontSize(7);
       doc.setFont("", "bold");
       doc.text(to, 30, 55);
-
 
       doc.setFontSize(7);
       doc.setFont("", "bold");
       doc.text(from, 30, 75);
 
-
-      doc.line(30, 80, 425, 80);
-
+      doc.line(30, 80, 425, 80); // horizontal line
 
       doc.setFontSize(7);
       doc.setFont("", "bold");
       doc.text(beneath_from, 30, 88);
 
-
       doc.setFontSize(7);
       doc.setFont("", "bold");
       doc.text(beneath_from_value, 380, 88);
-
 
       doc.setFontSize(7);
       doc.setFont("", "bold");
       doc.text(date_submitted, 30, 97);
 
-
       doc.setFontSize(7);
       doc.setFont("", "bold");
       doc.text(date_submitted_value, 380, 97);
 
-
       let elem = document.getElementById("invty-recon-table", true);
-
 
       // let tbl = $('#invty-recon-table').clone();
       // tbl.find('thead tr:nth-child(1)').remove();
@@ -511,7 +534,6 @@ export default {
         "Branch Discrepancy",
       ];
 
-
       let table_data = [
         [
           "#",
@@ -525,7 +547,6 @@ export default {
           "Branch Discrepancy",
         ],
       ];
-
 
       doc.autoTable(table_header, this.tableData, {
         startY: 130,
@@ -544,23 +565,23 @@ export default {
       doc.setFont("normal");
       doc.text(beneath_table, 80, doc.lastAutoTable.finalY + 15);
 
-      let prepared_by = "Prepared by:";
-      let prepared_by_value = 'Classification, Quality Control, Reconciliation Section Staff';
-      let prepared_by_position = '';
-      // let prepared_by_value = this.prepared_by;
-      // let prepared_by_position = this.prepared_by_position;
+        let prepared_by = "Prepared by:";
+        let prepared_by_value = 'Classification, Quality Control, Reconciliation Section Staff';
+        let prepared_by_position = '';
+        // let prepared_by_value = this.prepared_by;
+        // let prepared_by_position = this.prepared_by_position;
 
-      let verified_by = "Verified by:";
-      let verified_by_value = "MARK DELOS SANTOS";
-      let verified_by_position = "Classification, Quality Control, Reconciliation Section Head";
-      let verified_by_value_2 = "PERLA LEBASTE";
-      let verified_by_position_2 = "Inventory & Warehousing Manager";
+        let verified_by = "Verified by:";
+        let verified_by_value = "MARK DELOS SANTOS";
+        let verified_by_position = "Classification, Quality Control, Reconciliation Section Head";
+        let verified_by_value_2 = "PERLA LEBASTE";
+        let verified_by_position_2 = "Inventory & Warehousing Manager";
 
-      let noted_by = "Noted by:";
-      let noted_by_value = "RAFAEL V. SORIANO";
-      let noted_by_position = "General Manager";
-      let noted_by_value_2 = "MS. SONIA DELA CRUZ";
-      let noted_by_position_2 = "Vice President";
+        let noted_by = "Noted by:";
+        let noted_by_value = "RAFAEL V. SORIANO";
+        let noted_by_position = "General Manager";
+        let noted_by_value_2 = "MS. SONIA DELA CRUZ";
+        let noted_by_position_2 = "Vice President";
 
       // PREPARED BY
       doc.setFontSize(7);
@@ -610,11 +631,8 @@ export default {
       doc.output("dataurlnewwindow");
 
       doc.save("inventory.pdf");
-
     },
-
-
-    customSearch(value, search, item) {
+    customSearch (value, search, item) {
       return item;
       // return Object.values(item.inventory_reconciliations).some(v => v && v.toString().toLowerCase().includes(search))
     },
@@ -682,24 +700,24 @@ export default {
 
       return table_data;
     },
-    btnLabel() {
+    btnLabel(){
       return this.importIsClicked ? 'Upload' : 'Sync';
     },
-    loadingLabel() {
+    loadingLabel(){
       return this.importIsClicked ? 'Uploading...' : 'Syncing...';
     },
-    dialogHeaderTitle() {
+    dialogHeaderTitle(){
       return this.importIsClicked ? 'Import Excel Data From SAP' : 'Sync Data From SAP';
     },
-    actionListTblHdr() {
-      let menu = [
+    actionListTblHdr(){
+       let menu = [
+        
+       ];
 
-      ];
-
-      return menu;
+       return menu;
     },
-    actionListTblRow() {
-      let menu = [
+    actionListTblRow(){
+       let menu = [
         // {
         //   title: 'PDF',
         //   icon: 'mdi-file-pdf',
@@ -728,12 +746,12 @@ export default {
           hasPermission: this.hasPermission('inventory-recon-delete'),
           color: 'error',
         },
-      ];
+       ];
 
-      return menu;
+       return menu;
     },
     ...mapState("auth", ["user"]),
-    ...mapGetters("userRolesPermissions", ["hasRole", "hasAnyRole", "hasPermission", "hasAnyPermission"]),
+    ...mapGetters("userRolesPermissions", ["hasRole", "hasAnyRole", "hasPermission","hasAnyPermission"]),
   },
 
   mounted() {

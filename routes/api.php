@@ -355,6 +355,187 @@ Route::group(['prefix' => 'employee_master_data/key_performance', 'middleware' =
     ]); 
 });
 
+//Employee Master Data Classroom Performance Rating Routes
+Route::group(['prefix' => 'employee_master_data/classroom_performance_rating', 'middleware' => ['auth:api', 'employee.classroom.performance.rating.maintenance']], function() {
+    Route::get('/index', [
+        'uses' => 'API\EmployeeClassroomPerformanceRatingController@index',
+        'as' => 'employee.classroom.performance.rating.index'
+    ]);
+
+    Route::post('/store', [
+        'uses' => 'API\EmployeeClassroomPerformanceRatingController@store',
+        'as' => 'employee.classroom.performance.rating.store'
+    ]); 
+
+    Route::post('/update/{id}', [
+        'uses' => 'API\EmployeeClassroomPerformanceRatingController@update',
+        'as' => 'employee.classroom.performance.rating.update'
+    ]); 
+
+    Route::post('/delete', [
+        'uses' => 'API\EmployeeClassroomPerformanceRatingController@delete',
+        'as' => 'employee.classroom.performance.rating.delete'
+    ]); 
+});
+
+//Employee Master Data OJT Performance Rating Routes
+Route::group(['prefix' => 'employee_master_data/ojt_performance_rating', 'middleware' => ['auth:api', 'employee.ojt.performance.rating.maintenance']], function() {
+    Route::get('/index', [
+        'uses' => 'API\EmployeeOjtPerformanceRatingController@index',
+        'as' => 'employee.ojt.performance.rating.index'
+    ]);
+
+    Route::post('/store', [
+        'uses' => 'API\EmployeeOjtPerformanceRatingController@store',
+        'as' => 'employee.ojt.performance.rating.store'
+    ]); 
+
+    Route::post('/update/{id}', [
+        'uses' => 'API\EmployeeOjtPerformanceRatingController@update',
+        'as' => 'employee.ojt.performance.rating.update'
+    ]); 
+
+    Route::post('/delete', [
+        'uses' => 'API\EmployeeOjtPerformanceRatingController@delete',
+        'as' => 'employee.ojt.performance.rating.delete'
+    ]); 
+});
+
+//Employee Master Data Branch Assignment Position Routes
+Route::group(['prefix' => 'employee_master_data/branch_assignment_position', 'middleware' => ['auth:api', 'employee.branch.assignment.position.maintenance']], function() {
+    Route::get('/index', [
+        'uses' => 'API\EmployeeBranchAssignmentPositionController@index',
+        'as' => 'employee.branch.assignment.position.index'
+    ]);
+
+    Route::post('/store', [
+        'uses' => 'API\EmployeeBranchAssignmentPositionController@store',
+        'as' => 'employee.branch.assignment.position.store'
+    ]); 
+
+    Route::post('/update/{id}', [
+        'uses' => 'API\EmployeeBranchAssignmentPositionController@update',
+        'as' => 'employee.branch.assignment.position.update'
+    ]); 
+
+    Route::post('/delete', [
+        'uses' => 'API\EmployeeBranchAssignmentPositionController@delete',
+        'as' => 'employee.branch.assignment.position.delete'
+    ]); 
+});
+
+//Employee Master Data Merit History Routes
+Route::group(['prefix' => 'employee_master_data/merit_history', 'middleware' => ['auth:api', 'employee.merit.history.maintenance']], function() {
+    Route::get('/index', [
+        'uses' => 'API\EmployeeMeritHistoryController@index',
+        'as' => 'employee.merit.history.index'
+    ]);
+
+    Route::post('/store', [
+        'uses' => 'API\EmployeeMeritHistoryController@store',
+        'as' => 'employee.merit.history.store'
+    ]); 
+
+    Route::post('/update/{id}', [
+        'uses' => 'API\EmployeeMeritHistoryController@update',
+        'as' => 'employee.merit.history.update'
+    ]); 
+
+    Route::post('/delete', [
+        'uses' => 'API\EmployeeMeritHistoryController@delete',
+        'as' => 'employee.merit.history.delete'
+    ]); 
+});
+
+//Employee Master Data Training Routes
+Route::group(['prefix' => 'employee_master_data/training', 'middleware' => ['auth:api', 'employee.training.maintenance']], function() {
+    Route::get('/index', [
+        'uses' => 'API\EmployeeTrainingController@index',
+        'as' => 'employee.training.index'
+    ]);
+
+    Route::post('/store', [
+        'uses' => 'API\EmployeeTrainingController@store',
+        'as' => 'employee.training.store'
+    ]); 
+
+    Route::post('/update/{id}', [
+        'uses' => 'API\EmployeeTrainingController@update',
+        'as' => 'employee.training.update'
+    ]); 
+
+    Route::post('/delete', [
+        'uses' => 'API\EmployeeTrainingController@delete',
+        'as' => 'employee.training.delete'
+    ]); 
+});
+
+//Employee Master Data NTE Routes
+Route::group(['prefix' => 'employee_master_data/nte', 'middleware' => ['auth:api', 'employee.nte.maintenance']], function() {
+    Route::get('/index', [
+        'uses' => 'API\EmployeeNTEController@index',
+        'as' => 'employee.nte.index'
+    ]);
+
+    Route::post('/store', [
+        'uses' => 'API\EmployeeNTEController@store',
+        'as' => 'employee.nte.store'
+    ]); 
+
+    Route::post('/update/{id}', [
+        'uses' => 'API\EmployeeNTEController@update',
+        'as' => 'employee.nte.update'
+    ]); 
+
+    Route::post('/delete', [
+        'uses' => 'API\EmployeeNTEController@delete',
+        'as' => 'employee.nte.delete'
+    ]); 
+
+    Route::post('/file_download', [
+        'uses' => 'API\EmployeeNTEController@file_download',
+        'as' => 'employee.nte.file_download'
+    ]); 
+
+    Route::post('/file_delete', [
+        'uses' => 'API\EmployeeNTEController@file_delete',
+        'as' => 'employee.nte.file_delete'
+    ]); 
+});
+
+//Employee Master Data Disciplinary Routes
+Route::group(['prefix' => 'employee_master_data/disciplinary', 'middleware' => ['auth:api', 'employee.disciplinary.maintenance']], function() {
+    Route::get('/index', [
+        'uses' => 'API\EmployeeDisciplinaryController@index',
+        'as' => 'employee.disciplinary.index'
+    ]);
+
+    Route::post('/store', [
+        'uses' => 'API\EmployeeDisciplinaryController@store',
+        'as' => 'employee.disciplinary.store'
+    ]); 
+
+    Route::post('/update/{id}', [
+        'uses' => 'API\EmployeeDisciplinaryController@update',
+        'as' => 'employee.disciplinary.update'
+    ]); 
+
+    Route::post('/delete', [
+        'uses' => 'API\EmployeeDisciplinaryController@delete',
+        'as' => 'employee.disciplinary.delete'
+    ]); 
+
+    Route::post('/file_download', [
+        'uses' => 'API\EmployeeDisciplinaryController@file_download',
+        'as' => 'employee.disciplinary.file_download'
+    ]); 
+
+    Route::post('/file_delete', [
+        'uses' => 'API\EmployeeDisciplinaryController@file_delete',
+        'as' => 'employee.disciplinary.file_delete'
+    ]); 
+});
+
 // Employee Routes
 Route::group(['prefix' => 'employee', 'middleware' => ['auth:api', 'employee.maintenance']], function(){
     Route::get('/index', [
@@ -1129,7 +1310,6 @@ Route::group(['prefix' => 'position', 'middleware' => ['auth:api', 'position.mai
 
 });
 
-
 // Department Routes
 Route::group(['prefix' => 'department', 'middleware' => ['auth:api', 'department.maintenance']], function(){
     Route::get('/index', [
@@ -1158,7 +1338,6 @@ Route::group(['prefix' => 'department', 'middleware' => ['auth:api', 'department
     ]);
 
 });
-
 
 // Division Routes
 Route::group(['prefix' => 'division', 'middleware' => ['auth:api', 'division.maintenance']], function(){
@@ -1189,7 +1368,6 @@ Route::group(['prefix' => 'division', 'middleware' => ['auth:api', 'division.mai
 
 });
 
-
 // SAP Database Routes
 Route::group(['prefix' => 'sap_database', 'middleware' => ['auth:api', 'sap_database.maintenance']], function(){
     Route::get('/index', [
@@ -1218,17 +1396,6 @@ Route::group(['prefix' => 'sap_database', 'middleware' => ['auth:api', 'sap_data
     ]);
 
 });
-
-
-//Activity Logs
-Route::group(['prefix' => 'activity_logs', 'middleware' => ['auth:api', 'activity.logs']], function(){
-    Route::get('/index', [
-        'uses' => 'API\ActivityLogController@activity_logs',
-        'as' => 'activity_logs.index',
-    ]);
-    
-});
-
 
 // Online Banking Routes
 Route::group(['prefix' => 'onlinebanking', 'middleware' => ['auth:api', 'online_banking.maintenance']], function(){
@@ -1268,6 +1435,12 @@ Route::group(['prefix' => 'onlinebanking', 'middleware' => ['auth:api', 'online_
         'as' => 'onlinebanking.delete',
     ]);
 
+    Route::post('/deletesignature', [
+        'uses' => 'API\OnlineBankingController@deletesignature',
+        'as' => 'onlinebanking.deletesignature',
+    ]);
+
+
 
     // Route::post('/update/{id}', [
     //     'uses' => 'API\DepartmentController@update',
@@ -1282,4 +1455,12 @@ Route::group(['prefix' => 'onlinebanking', 'middleware' => ['auth:api', 'online_
 
 });
 
+//Activity Logs
+Route::group(['prefix' => 'activity_logs', 'middleware' => ['auth:api', 'activity.logs']], function(){
+    Route::get('/index', [
+        'uses' => 'API\ActivityLogController@activity_logs',
+        'as' => 'activity_logs.index',
+    ]);
+    
+});
 

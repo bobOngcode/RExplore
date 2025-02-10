@@ -11,6 +11,13 @@ use App\Position;
 use App\RequiredEmployeeMap;
 use App\EmployeeMasterDataFile;
 use App\EmployeeKeyPerformance;
+use App\EmployeeClassroomPerformanceRating;
+use App\EmployeeOjtPerformanceRating;
+use App\EmployeeBranchAssignmentPosition;
+use App\EmployeeMeritHistory;
+use App\EmployeeTraining;
+use App\EmployeeExplanation;
+use App\EmployeeDisciplinary;
 use App\Imports\EmployeeMasterDataImport;
 use App\Exports\EmployeeMasterDataExport;
 use App\Exports\BranchManpowerReport;
@@ -45,18 +52,40 @@ class EmployeeMasterDataController extends Controller
         ->with('position')
         ->with('position.rank')
         ->with('files')
-        ->with(['key_performances' => function($query) {
+        ->with(['monthly_key_performances' => function($query) {
             $query->orderBy('year')
                   ->orderBy('id');
         }])
+        ->with(['classroom_performance_ratings' => function($query) {
+            $query->orderBy('department');
+        }])
+        ->with(['ojt_performance_ratings' => function($query) {
+            $query->orderBy('id');
+        }])
+        ->with(['branch_assignment_positions' => function($query) {
+            $query->orderBy('date_assigned');
+        }])
+        ->with(['merit_histories' => function($query) {
+            $query->orderBy('merit_date');
+        }])
+        ->with('trainings')
+        ->with(['explanations' => function($query) {
+            $query->select(DB::raw("*, date_format(created_at,'%Y-%m-%d') as create_date"))
+                  ->orderBy('date_issued');
+        }])
+        ->with(['disciplinaries' => function($query) {
+            $query->select(DB::raw("*, date_format(created_at,'%Y-%m-%d') as create_date"))
+                  ->orderBy('date_issued');
+        }])
         ->select(DB::raw("*,
                  FLOOR((TIMESTAMPDIFF(DAY, dob, date_format(NOW(),'%Y-%m-%d')) / 365)) as age,
-                 CONCAT(FLOOR((TIMESTAMPDIFF(DAY, date_employed, date_format(IFNULL(date_resigned, NOW()),'%Y-%m-%d')) / 365)), ' years(s) ',
-                 FLOOR(((TIMESTAMPDIFF(DAY, date_employed, date_format(IFNULL(date_resigned, NOW()),'%Y-%m-%d')) % 365) / 30)), ' month(s) ',
-                 ((TIMESTAMPDIFF(DAY, date_employed, date_format(IFNULL(date_resigned, NOW()),'%Y-%m-%d')) % 365) % 30), ' day(s)')  as length_of_service
+                 CONCAT(FLOOR((TIMESTAMPDIFF(DAY, date_employed, date_format(IFNULL(CASE WHEN date_resigned = '0000-00-00' THEN null ELSE date_resigned END, NOW()),'%Y-%m-%d')) / 365)), ' years(s) ',
+                 FLOOR(((TIMESTAMPDIFF(DAY, date_employed, date_format(IFNULL(CASE WHEN date_resigned = '0000-00-00' THEN null ELSE date_resigned END, NOW()),'%Y-%m-%d')) % 365) / 30)), ' month(s) ',
+                 ((TIMESTAMPDIFF(DAY, date_employed, date_format(IFNULL(CASE WHEN date_resigned = '0000-00-00' THEN null ELSE date_resigned END, NOW()),'%Y-%m-%d')) % 365) % 30), ' day(s)')  as length_of_service
                  "
              )
         );
+        
     }
 
     public function validator($data)
@@ -162,6 +191,7 @@ class EmployeeMasterDataController extends Controller
 
     public function store(Request $request)
     {       
+        
         $validator = $this->validator($request->all());
         
         if($validator->fails())
@@ -191,6 +221,58 @@ class EmployeeMasterDataController extends Controller
             return response()->json(['employee_files_errors' => $employee_files_errors], 200);
         }
 
+        // START -- Validate NTE Files
+        $nte_files_errors = [];
+        $explanation_files_errors = [];
+        $explanations = is_array($request->explanations) ? $request->explanations : [];
+        
+        foreach ($explanations as $key => $file) {
+            $nte_file = $file['nte_file'];
+            $explanation_file = $file['explanation_file'];
+
+            if($nte_file)
+            {
+                $file_validator = $this->file_validator($nte_file);
+
+                if($file_validator->fails())
+                {
+                    $nte_files_errors[$key] =   $file_validator->errors();
+                }
+            }
+
+            if($explanation_file)
+            {
+                $file_validator = $this->file_validator($explanation_file);
+
+                if($file_validator->fails())
+                {
+                    $explanation_files_errors[$key] =   $file_validator->errors();
+                }
+            }
+        }
+
+        // END -- Validate NTE Files
+        
+        // START -- Validate Disciplinary Files
+        $disciplinary_files_errors = [];
+        $disciplinaries = is_array($request->disciplinaries) ? $request->disciplinaries : [];
+        
+        foreach ($explanations as $key => $file) {
+            $disciplinary_file = $file['file'];
+
+            if($disciplinary_file)
+            {
+                $file_validator = $this->file_validator($disciplinary_file);
+
+                if($file_validator->fails())
+                {
+                    $disciplinary_files_errors[$key] =   $file_validator->errors();
+                }
+            }
+        }
+
+        // END -- Validate Disciplinary Files
+
         $employee = new EmployeeMasterData();
         $employee = $this->save($employee, $request);
 
@@ -215,6 +297,162 @@ class EmployeeMasterDataController extends Controller
                     'year' => $performance->year,
                     'month' => $performance->month,
                     'grade' => $performance->grade,
+                ]);
+            }
+        }
+
+        $performances = json_decode($request->classroom_performance_ratings);
+        if(is_array($performances))
+        {
+            foreach ($performances as $key => $performance) {
+
+                EmployeeClassroomPerformanceRating::create([
+                    'employee_id' => $employee->id,
+                    'department' => $performance->department,
+                    'grade' => $performance->grade,
+                ]);
+            }
+        }
+
+        $performances = json_decode($request->ojt_performance_ratings);
+        if(is_array($performances))
+        {
+            foreach ($performances as $key => $performance) {
+
+                EmployeeOjtPerformanceRating::create([
+                    'employee_id' => $employee->id,
+                    'mentor' => $performance->mentor,
+                    'grade' => $performance->grade,
+                    'kpi' => $performance->kpi,
+                ]);
+            }
+        }
+
+        $branch_assignment_positions = json_decode($request->branch_assignment_positions);
+        if(is_array($branch_assignment_positions))
+        {
+            foreach ($branch_assignment_positions as $key => $branch_assignment) {
+
+                EmployeeBranchAssignmentPosition::create([
+                    'employee_id' => $employee->id,
+                    'date_assigned' => $branch_assignment->date_assigned,
+                    'position' => $branch_assignment->position,
+                    'branch' => $branch_assignment->branch,
+                    'remarks' => $branch_assignment->remarks,
+                ]);
+            }
+        }
+
+        $merit_histories = json_decode($request->merit_histories);
+        if(is_array($merit_histories))
+        {
+            foreach ($merit_histories as $key => $history) {
+
+                EmployeeMeritHistory::create([
+                    'employee_id' => $employee->id,
+                    'merit_date' => $history->merit_date,
+                    'salary' => $history->salary,
+                ]);
+            }
+        }
+
+        $trainings = json_decode($request->trainings);
+        if(is_array($trainings))
+        {
+            foreach ($trainings as $key => $training) {
+
+                EmployeeTraining::create([
+                    'employee_id' => $employee->id,
+                    'mentor' => $training->mentor,
+                    'grade' => $training->grade,
+                    'kpi' => $training->kpi,
+                    'remarks' => $training->remarks,
+                ]);
+            }
+        }
+
+        $explanations = json_decode($request->explanations);
+        if(is_array($explanations))
+        {   
+            $nte_files = $request->nte_files;
+            $explanations_files = $request->explanation_files;
+
+            foreach ($explanations as $key => $explanation) {
+                $nte_file = $nte_files[$key];
+                $nte_file_extension = $nte_file ? $nte_file->getClientOriginalExtension() : '';
+                $explanation_file = $explanations_files[$key];
+                $explanation_file_extension = $explanation_file ? $explanation_file->getClientOriginalExtension() : '';
+                
+                $file_date = Carbon::now()->format('Y-m-d');
+                $nte_file_name = $nte_file ? time().$nte_file->getClientOriginalName() : '';
+                $explanation_file_name = $explanation_file ? time().$explanation_file->getClientOriginalName() : '';
+                $file_path = '/wysiwyg/employee_disciplinary_measure_files/' . $file_date;
+
+                if($nte_file)
+                {
+                    $nte_file->move(public_path() . $file_path, $nte_file_name);
+                }
+                
+                if($explanation_file)
+                {
+                    $explanation_file->move(public_path() . $file_path, $explanation_file_name);
+                }
+
+                EmployeeExplanation::create([
+                    'employee_id' => $employee->id,
+                    'date_issued' => $explanation->date_issued,
+                    'issued_by' => $explanation->issued_by,
+                    'nte_code' => $explanation->nte_code,
+                    'nte_file_name' => $nte_file_name,
+                    'nte_file_path' => $nte_file ? $file_path : '',
+                    'nte_file_type' => $nte_file_extension,
+                    'nte_date_upload' => $nte_file ? $file_date : '',
+                    'explanation_file_name' => $explanation_file_name,
+                    'explanation_file_path' => $explanation_file ? $file_path : '',
+                    'explanation_file_type' => $explanation_file_extension,
+                    'explanation_date' => $explanation->explanation_date,
+                    'explanation_date_upload' => $explanation_file ? $file_date : '',
+                    'violation' => $explanation->violation,
+                    'remarks' => $explanation->remarks,
+                    'status' => $explanation->status,
+                ]);
+            }
+        }
+
+        $disciplinaries = json_decode($request->disciplinaries);
+        if(is_array($disciplinaries))
+        {   
+            $disciplinary_files = $request->disciplinary_files;
+
+            foreach ($disciplinaries as $key => $disciplinary) {
+                $disciplinary_file = $disciplinary_files[$key];
+                $disciplinary_file_extension = $disciplinary_file ? $disciplinary_file->getClientOriginalExtension() : '';
+                
+                $file_date = Carbon::now()->format('Y-m-d');
+                $disciplinary_file_name = $disciplinary_file ? time().$disciplinary_file->getClientOriginalName() : '';
+                $file_path = '/wysiwyg/employee_disciplinary_measure_files/' . $file_date;
+
+                if($disciplinary_file)
+                {
+                    $disciplinary_file->move(public_path() . $file_path, $disciplinary_file_name);
+                }
+
+                EmployeeDisciplinary::create([
+                    'employee_id' => $employee->id,
+                    'date_issued' =>  $disciplinary->date_issued,
+                    'nte_code' => $disciplinary->nte_code,
+                    'offense_code' => $disciplinary->offense_code,
+                    'offense' => $disciplinary->offense,
+                    'offense_type' => $disciplinary->offense_type,
+                    'disciplinary_action' => $disciplinary->disciplinary_action,
+                    'file_name' => $disciplinary_file_name,
+                    'file_path' => $disciplinary_file ? $file_path : '',
+                    'file_type' => $disciplinary_file_extension,
+                    'file_date_upload' => $disciplinary_file ? $file_date : '',
+                    'series' => $disciplinary->series,
+                    'status' => $disciplinary->status,
+                    'transmit_date' => $disciplinary->transmit_date,
+                    'return_date' => $disciplinary->return_date,
                 ]);
             }
         }
@@ -381,7 +619,6 @@ class EmployeeMasterDataController extends Controller
         {
             $employee = EmployeeMasterData::whereIn('id', $employee_id);
         }
-        
         $employee->delete();
 
         $files = EmployeeMasterDataFile::where('employee_id', $employee_id)->get();
@@ -399,10 +636,57 @@ class EmployeeMasterDataController extends Controller
 			$file_path = $file->file_path;
 
 			$path = public_path() . $file_path . "/" . $file->file_name;
+
 			unlink($path);
 		}
 
         EmployeeKeyPerformance::where('employee_id', $employee_id)->delete();
+        EmployeeClassroomPerformanceRating::where('employee_id', $employee_id)->delete();
+        EmployeeOjtPerformanceRating::where('employee_id', $employee_id)->delete();
+        EmployeeBranchAssignmentPosition::where('employee_id', $employee_id)->delete();
+        EmployeeMeritHistory::where('employee_id', $employee_id)->delete();
+        EmployeeTraining::where('employee_id', $employee_id)->delete();
+
+        // START: Delete Issued NTE
+        $explanations = EmployeeExplanation::where('employee_id', $employee_id)->get();
+
+        foreach ($explanations as $file) {
+
+            if($file->nte_file_name)
+            {
+                $nte_file_path = $file->nte_file_path;
+                $path = public_path() . $nte_file_path . "/" . $file->nte_file_name;
+                unlink($path);
+            }
+
+            if($file->explanation_file_name)
+            {
+                $explanation_file_path = $file->explanation_file_path;
+                $path = public_path() . $explanation_file_path . "/" . $file->explanation_file_name;
+                unlink($path);
+            }
+			
+		}
+
+        EmployeeExplanation::where('employee_id', $employee_id)->delete();
+        // END: Delete Issued NTE
+        
+        // START: Delete Disciplinary Measure
+        $disciplinaries = EmployeeDisciplinary::where('employee_id', $employee_id)->get();
+
+        foreach ($disciplinaries as $file) {
+
+            if($file->file_name)
+            {
+                $file_path = $file->file_path;
+                $path = public_path() . $file_path . "/" . $file->file_name;
+                unlink($path);
+            }
+		}
+
+        EmployeeDisciplinary::where('employee_id', $employee_id)->delete();
+
+        // END: Delete Disciplinary Measure
 
         return response()->json(['success' => 'Record has been deleted'], 200);
     }

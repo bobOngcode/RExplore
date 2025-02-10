@@ -16,9 +16,6 @@
       <v-tab class="tab-menu" :style="tab == 4 ? tabCSS : ''">
         Offboarding
       </v-tab>
-      <v-tab class="tab-menu" :style="tab == 5 ? tabCSS : ''">
-        Files & Requirements
-      </v-tab>
     </v-tabs>
     <v-tabs-items v-model="tab">
       <v-tab-item :transition="false" class="full-height-tab-main py-2">
@@ -27,7 +24,7 @@
             Personal Information
           </v-tab>
           <v-tab class="vertical-tab-menu">
-            Files & Requirments
+            Files & Requirements
           </v-tab>
           <v-tab-item :transition="false" class="full-height-tab-personal-data py-2">
             <v-card class="mx-2 elevation-10" height="100%">
@@ -508,7 +505,10 @@
             Monthly Key Performance
           </v-tab>
           <v-tab class="vertical-tab-menu">
-            Performance Rating During Training
+            Classroom Performance Rating
+          </v-tab>
+          <v-tab class="vertical-tab-menu">
+            OJT Performance Rating
           </v-tab>
           <v-tab class="vertical-tab-menu">
             Branch Assignment & Positions
@@ -517,7 +517,7 @@
             Merit History
           </v-tab>
           <v-tab class="vertical-tab-menu">
-            Traing and Re-development
+            Training & Re-development
           </v-tab>
           <v-tab-item :transition="false" class="full-height-tab-performance py-2">
             <v-card class="mx-2 elevation-10" height="100%">
@@ -640,11 +640,11 @@
           <v-tab-item :transition="false" class="full-height-tab-performance py-2">
             <v-card class="mx-2 elevation-10" height="100%">
               <v-card-text>
-                <KeyPerformanceTable 
-                  :employee_id="data.id"
-                  :editedIndex="editedIndex" 
-                  :key_performances="monthly_key_performances"
-                  ref="KeyPerformanceTable"
+                <MonthlyKeyPerformance 
+                  :data="data"
+                  :editedIndex="editedIndex"
+                  @updateMonthlyKeyPerformance="updateMonthlyKeyPerformance"
+                  ref="MonthlyKeyPerformance"
                 />
               </v-card-text>
             </v-card>
@@ -653,47 +653,97 @@
           <v-tab-item :transition="false" class="full-height-tab-performance py-2">
             <v-card class="mx-2 elevation-10" height="100%">
               <v-card-text>
-                <v-row>
-                  <v-col cols="4" class="my-0 py-0 mt-4">
-                    <v-text-field
-                      name="performance_classroom"
-                      label="Classroom Performance Rating (%)"
-                      v-model="editedItem.performance_ojt"
-                      @keypress="decNumValFilter()"
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col cols="4" class="my-0 py-0">
-                    <v-text-field
-                      name="performance_ojt"
-                      label="OJT Performance Rating (%)"
-                      v-model="editedItem.performance_ojt"
-                      @keypress="decNumValFilter()"
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
+                <ClassroomPerformanceRating 
+                  :data="data"
+                  :editedIndex="editedIndex" 
+                  :departments="departments"
+                  @updateClassroomPerformanceRating="updateClassroomPerformanceRating"
+                  ref="ClassroomPerformanceRating"
+                />
               </v-card-text>
             </v-card>
           </v-tab-item>
           <v-tab-item :transition="false" class="full-height-tab-performance py-2">
             <v-card class="mx-2 elevation-10" height="100%">
               <v-card-text>
-               
+                <OJTPerformanceRating
+                  :data="data"
+                  :editedIndex="editedIndex"
+                  @updateOJTPerformanceRating="updateOJTPerformanceRating" 
+                  ref="OJTPerformanceRating"
+                />
               </v-card-text>
             </v-card>
           </v-tab-item>
           <v-tab-item :transition="false" class="full-height-tab-performance py-2">
             <v-card class="mx-2 elevation-10" height="100%">
               <v-card-text>
-                
+                <BranchAssignmentPosition
+                  :data="data"
+                  :positions="positions"
+                  :branches="branches"
+                  :editedIndex="editedIndex"
+                  @updateBranchAssignmentPosition="updateBranchAssignmentPosition" 
+                  ref="BranchAssignmentPosition"
+                />
               </v-card-text>
             </v-card>
           </v-tab-item>
           <v-tab-item :transition="false" class="full-height-tab-performance py-2">
             <v-card class="mx-2 elevation-10" height="100%">
               <v-card-text>
-               
+                <MeritHistory
+                  :data="data"
+                  :editedIndex="editedIndex"
+                  @updateMeritHistory="updateMeritHistory" 
+                  ref="MeritHistory"
+                />
+              </v-card-text>
+            </v-card>
+          </v-tab-item>
+          <v-tab-item :transition="false" class="full-height-tab-performance py-2">
+            <v-card class="mx-2 elevation-10" height="100%">
+              <v-card-text>
+                <TrainingRedevelopment
+                  :data="data"
+                  :editedIndex="editedIndex"
+                  @updateTraining="updateTraining" 
+                  ref="TrainingRedevelopment"
+                />
+              </v-card-text>
+            </v-card>
+          </v-tab-item>
+        </v-tabs>
+      </v-tab-item>
+      <v-tab-item :transition="false" class="full-height-tab-main py-2">
+        <v-tabs v-model="tab_disciplinary_measure" vertical color="primary" light class="pa-0 ma-0">
+          <v-tab class="vertical-tab-menu mt-2">
+            Issued NTE
+          </v-tab>
+          <v-tab class="vertical-tab-menu">
+            Disciplinary Action
+          </v-tab>
+          <v-tab-item :transition="false" class="full-height-tab-disciplinary-measure py-2">
+            <v-card class="mx-2 elevation-10" height="100%">
+              <v-card-text>
+                <IssuedNTE 
+                  :data="data"
+                  :editedIndex="editedIndex"
+                  @updateIssuedNTE="updateIssuedNTE"
+                  ref="IssuedNTE"
+                />
+              </v-card-text>
+            </v-card>
+          </v-tab-item>
+          <v-tab-item :transition="false" class="full-height-tab-disciplinary-measure py-2">
+            <v-card class="mx-2 elevation-10" height="100%">
+              <v-card-text>
+                <DisciplinaryAction 
+                  :data="data"
+                  :editedIndex="editedIndex"
+                  @updateDisciplinaryAction="updateDisciplinaryAction"
+                  ref="DisciplinaryAction"
+                />
               </v-card-text>
             </v-card>
           </v-tab-item>
@@ -701,36 +751,231 @@
       </v-tab-item>
       <v-tab-item :transition="false" class="full-height-tab-main py-2">
         <v-card class="mx-2 elevation-10" height="100%">
-          <v-card-title>Disciplinary Measures & Penalties</v-card-title>
-          <v-card-text>
-            
-          </v-card-text>
-        </v-card>
-      </v-tab-item>
-      <v-tab-item :transition="false" class="full-height-tab-main py-2">
-        <v-card class="mx-2 elevation-10" height="100%">
           <v-card-title>Offboarding</v-card-title>
           <v-card-text>
-            
-          </v-card-text>
-        </v-card>
-      </v-tab-item>
-      <v-tab-item :transition="false" class="full-height-tab-main py-2">
-        <v-card class="mx-2 elevation-10" height="100%">
-          <v-card-title>Files & Requirements</v-card-title>
-          <v-card-text>
-            
+            <v-row class="mt-4">
+              <v-col cols="8">
+                <v-row>
+                  <v-col class="my-0 py-0">
+                    <v-text-field
+                      label="Last Day of Work"
+                      type="date"
+                      prepend-icon="mdi-calendar"
+                      v-model="editedItem.last_day_of_work"
+                      :error-messages="lastDayOfWorkErrors"
+                      @input="validateDate('last_day_of_work')"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col class="my-0 py-0">
+                    <v-autocomplete
+                      v-model="editedItem.reason_of_resignation"
+                      :items="resignationReasons"
+                      label="Reason of Resignation"
+                    >
+                    </v-autocomplete>
+                  </v-col>
+                </v-row>
+                <v-row>
+                   <v-col class="my-0 py-0">
+                    <v-autocomplete
+                      v-model="editedItem.coe_is_issued"
+                      :items="[{ value: 1, text: 'Yes' }, { value: 0, text: 'No' }]"
+                      item-value="value"
+                      item-text="text"
+                      label="Issued COE"
+                    >
+                    </v-autocomplete>
+                  </v-col>
+                  <v-col class="my-0 py-0">
+                    <v-text-field
+                      v-model="editedItem.specified_reason_of_resignation"
+                      label="Specify Reason"
+                      :disabled="editedItem.reason_of_resignation != 'Others (Specify)'"
+                    >
+                    </v-text-field>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col class="my-0 py-0">
+                    <v-autocomplete
+                      v-model="editedItem.last_pay_is_issued"
+                      :items="[{ value: 1, text: 'Yes' }, { value: 0, text: 'No' }]"
+                      item-value="value"
+                      item-text="text"
+                      label="Issued Last Pay"
+                    >
+                    </v-autocomplete>
+                  </v-col>
+                  <v-col class="my-0 py-0">
+                    <v-autocomplete
+                      v-model="editedItem.compliance"
+                      :items="compliances"
+                      label="Compliance"
+                    >
+                    </v-autocomplete>
+                  </v-col>
+                </v-row>
+              </v-col>
+              <v-divider vertical></v-divider>
+              <v-col cols="4">
+                <v-row>
+                  <v-col class="my-0 py-0 mt-4">
+                    <span class="subtitle-1 font-weight-bold">Attachments </span>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col :class="'my-0 py-0 ' + (lastDayFile ? 'pt-5' : '')">
+                    <template v-if="lastDayFile">
+                      <span class="subtitle-1 mt-4">File: </span>
+                      <span> 
+                        <v-btn 
+                          class="mb-1"
+                          small 
+                          color="primary" 
+                          text 
+                          @click="hasAnyPermission('employee-master-data-file-download') ? downloadFile(lastDayFile) : ''"
+                        > 
+                          Last Day of Work File
+                        </v-btn> 
+                      </span>
+                      <v-tooltip top>
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-btn 
+                            class="mb-1"
+                            x-small
+                            color="error" 
+                            rounded
+                            icon
+                            @click="confirmDeleteFile(lastDayFile)"
+                            v-if="hasAnyPermission('employee-master-data-file-delete')"
+                            v-bind="attrs" 
+                            v-on="on"
+                          > 
+                            <v-icon>mdi-delete</v-icon> 
+                          </v-btn>
+                        </template>
+                        <span>Delete File</span>
+                      </v-tooltip> 
+                    </template>
+                    <template v-if="!lastDayFile">
+                      <v-file-input
+                        v-model="last_day_of_work_file_input"
+                        show-size
+                        label="Last Day of Work (Attachment)"
+                        prepend-icon="mdi-paperclip"
+                        required
+                        :error-messages="lastDayFileErrors"
+                        @change="validateFile('last_day_of_work_file_input')"
+                        clearable
+                      >
+                      </v-file-input>
+                    </template>
+                  </v-col>  
+                </v-row>
+                <v-row>
+                  <v-col :class="'my-0 py-0 ' + (clearanceFile ? 'pt-5' : '')">
+                    <template v-if="clearanceFile">
+                      <span class="subtitle-1 mt-4">File: </span>
+                      <span> 
+                        <v-btn 
+                          class="mb-1"
+                          small 
+                          color="primary" 
+                          text 
+                          @click="hasAnyPermission('employee-master-data-file-download') ? downloadFile(clearanceFile) : ''"
+                        > 
+                          Clearance File
+                        </v-btn> 
+                      </span>
+                      <v-tooltip top>
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-btn 
+                            class="mb-1"
+                            x-small
+                            color="error" 
+                            rounded
+                            icon
+                            @click="confirmDeleteFile(clearanceFile)"
+                            v-if="hasAnyPermission('employee-master-data-file-delete')"
+                            v-bind="attrs" 
+                            v-on="on"
+                          > 
+                            <v-icon>mdi-delete</v-icon> 
+                          </v-btn>
+                        </template>
+                        <span>Delete File</span>
+                      </v-tooltip> 
+                    </template>
+                    <template v-if="!clearanceFile">
+                      <v-file-input
+                        v-model="clearance_file_input"
+                        show-size
+                        label="Clearance (Attachment)"
+                        prepend-icon="mdi-paperclip"
+                        required
+                        :error-messages="clearanceFileErrors"
+                        @change="validateFile('clearance_file_input')"
+                        clearable
+                      >
+                      </v-file-input>
+                    </template>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col :class="'my-0 py-0 ' + (quitClaimFile ? 'pt-5' : '')">
+                    <template v-if="quitClaimFile">
+                      <span class="subtitle-1 mt-4">File: </span>
+                      <span> 
+                        <v-btn 
+                          class="mb-1"
+                          small 
+                          color="primary" 
+                          text 
+                          @click="hasAnyPermission('employee-master-data-file-download') ? downloadFile(quitClaimFile) : ''"
+                        > 
+                          Quitclaim File
+                        </v-btn> 
+                      </span>
+                      <v-tooltip top>
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-btn 
+                            class="mb-1"
+                            x-small
+                            color="error" 
+                            rounded
+                            icon
+                            @click="confirmDeleteFile(quitClaimFile)"
+                            v-if="hasAnyPermission('employee-master-data-file-delete')"
+                            v-bind="attrs" 
+                            v-on="on"
+                          > 
+                            <v-icon>mdi-delete</v-icon> 
+                          </v-btn>
+                        </template>
+                        <span>Delete File</span>
+                      </v-tooltip> 
+                    </template>
+                    <template v-if="!quitClaimFile">
+                      <v-file-input
+                        v-model="quitclaim_file_input"
+                        show-size
+                        label="Quitclaim (Attachment)"
+                        prepend-icon="mdi-paperclip"
+                        required
+                        :error-messages="quitClaimFileErrors"
+                        @change="validateFile('clearance_file_input')"
+                        clearable
+                      >
+                      </v-file-input>
+                    </template>
+                  </v-col>
+                </v-row>
+              </v-col>
+            </v-row>
           </v-card-text>
         </v-card>
       </v-tab-item>
     </v-tabs-items>  
-    <!-- <AttachFileDialog 
-      :dialog="attach_file_dialog" 
-      :employee_id="data.id"
-      :editedIndex="editedIndex"
-      @closeAttachFileDialog="closeAttachFileDialog"
-      @uploadFile="uploadFile"
-    /> -->
     <v-dialog v-model="dialog_delete_loading" max-width="500px" persistent>
       <v-card>
         <v-card-text>
@@ -802,17 +1047,30 @@ import { validationMixin } from "vuelidate";
 import { required, maxLength, email } from "vuelidate/lib/validators";
 import { mapState, mapGetters } from "vuex";
 import AttachFileDialog from './AttachFileDialog.vue';
-import KeyPerformanceTable from './performance_component/KeyPerformanceTable.vue';
+import MonthlyKeyPerformance from './performance_component/MonthlyKeyPerformance.vue';
+import ClassroomPerformanceRating from './performance_component/ClassroomPerformanceRating.vue';
+import OJTPerformanceRating from './performance_component/OJTPerformanceRating.vue';
+import BranchAssignmentPosition from './performance_component/BranchAssignmentPosition.vue';
+import MeritHistory from './performance_component/MeritHistory.vue';
+import TrainingRedevelopment from './performance_component/TrainingRedevelopment.vue';
+import IssuedNTE from './disciplinary_measures/IssuedNTE.vue';
+import DisciplinaryAction from './disciplinary_measures/DisciplinaryAction.vue';
 
 export default {
   components: {
-    KeyPerformanceTable,
+    MonthlyKeyPerformance,
+    ClassroomPerformanceRating,
+    OJTPerformanceRating,
+    BranchAssignmentPosition,
+    MeritHistory,
+    TrainingRedevelopment,
+    IssuedNTE,
+    DisciplinaryAction,
     AttachFileDialog
   },
   props: [
     'data',
     'files',
-    'key_performances',
     'branches',
     'positions',
     'departments',
@@ -851,6 +1109,7 @@ export default {
       tab: 0,
       tab_personal_data: 0,
       tab_performance_management: 0,
+      tab_disciplinary_measure: 0,
       gender_items: [
         { text: "MALE", value: "MALE" },
         { text: "FEMALE", value: "FEMALE" },
@@ -900,6 +1159,7 @@ export default {
         regularization_date: "",
         last_day_of_work: "",
         reason_of_resignation: "",
+        specified_reason_of_resignation: "",
         coe_is_issued: "",
         last_pay_is_issued: "",
         compliance: "",
@@ -940,18 +1200,19 @@ export default {
         regularization_date: "",
         last_day_of_work: "",
         reason_of_resignation: "",
+        specified_reason_of_resignation: "",
         coe_is_issued: "",
         last_pay_is_issued: "",
         compliance: "",
         active: true,
       },
       employee_files: [],
-      monthly_key_performances: [],
       dateErrors: {
         birth_date: { status: false, msg: "" },
         date_employed: { status: false, msg: "" },
         date_resigned: { status: false, msg: "" },
         regularization_date: { status: false, msg: "" },
+        last_day_of_work: { status: false, msg: "" },
       },
       input_birth_date: false,
       input_date_employed: false,
@@ -961,6 +1222,9 @@ export default {
       compliances: ['Render 30 Days', 'Render 60 days', 'Non-Compliant'],
       regularization_file_input: [],
       regularization_memo_file_input: [],
+      last_day_of_work_file_input: [],
+      clearance_file_input: [],
+      quitclaim_file_input: [],
       fileInvalid: false,
       attach_file_dialog: false,
       swalAttr: {
@@ -979,6 +1243,67 @@ export default {
     }
   },
   methods: {
+    touchChildComponentForms() {
+      let componentArr = [
+        'MonthlyKeyPerformance',
+        'ClassroomPerformanceRating',
+        'OJTPerformanceRating',
+        'BranchAssignmentPosition',
+        'MeritHistory',
+        'TrainingRedevelopment',
+        'IssuedNTE',
+        'DisciplinaryAction',
+      ];
+
+      componentArr.forEach(value => {
+
+        let component = this.$refs[value];
+
+        // if component exists or loaded/rendered
+        if(component)
+        { 
+          // if table_action_mode has value (Add or Edit), if tab has active forms to fill out
+          if(component.table_action_mode)
+          {
+            component.$v.$touch();
+          }
+        }
+
+      });
+      
+      // let MonthlyKeyPerformance = this.$refs.MonthlyKeyPerformance;
+      
+      // if(MonthlyKeyPerformance)
+      // {
+      //   // if table_action_mode has value (Add or Edit), if tab has active forms to fill out
+      //   if(MonthlyKeyPerformance.table_action_mode)
+      //   {
+      //     MonthlyKeyPerformance.$v.$touch();
+      //   }
+      // }
+
+      // let ClassroomPerformanceRating = this.$refs.ClassroomPerformanceRating;
+      // this.$refs.ClassroomPerformanceRating ? this.$refs.ClassroomPerformanceRating.$v.$touch() : '';
+
+      // let OJTPerformanceRating = this.$refs.OJTPerformanceRating;
+      // this.$refs.OJTPerformanceRating ? this.$refs.OJTPerformanceRating.$v.$touch() : '';
+
+      // let BranchAssignmentPosition = this.$refs.BranchAssignmentPosition;
+      // this.$refs.BranchAssignmentPosition ? this.$refs.BranchAssignmentPosition.$v.$touch() : '';
+
+      // let MeritHistory = this.$refs.MeritHistory;
+      // this.$refs.MeritHistory ? this.$refs.MeritHistory.$v.$touch() : '';
+
+      // let TrainingRedevelopment = this.$refs.TrainingRedevelopment;
+      // this.$refs.TrainingRedevelopment ? this.$refs.TrainingRedevelopment.$v.$touch() : '';
+
+      // let IssuedNTE = this.$refs.IssuedNTE;
+      // this.$refs.IssuedNTE ? this.$refs.IssuedNTE.$v.$touch() : '';
+      
+      // let DisciplinaryAction = this.$refs.DisciplinaryAction;
+      // this.$refs.DisciplinaryAction ? this.$refs.DisciplinaryAction.$v.$touch() : '';
+
+    },
     openAttachFileDialog() {
       this.$emit('openAttachFileDialog');
     },
@@ -1157,18 +1482,57 @@ export default {
       this.attach_file_dialog = false;
     },
 
-    uploadFile(data) {
+    updateMonthlyKeyPerformance(data) {
+      this.$emit('updateMonthlyKeyPerformance', data);
+    },
 
-      if(this.editedIndex > -1) //update mode
+    updateClassroomPerformanceRating(data) {
+      this.$emit('updateClassroomPerformanceRating', data);
+    },
+
+    updateOJTPerformanceRating(data) {
+      this.$emit('updateOJTPerformanceRating', data);
+    },
+
+    updateMeritHistory(data) {
+      this.$emit('updateMeritHistory', data);
+    },
+
+    updateTraining(data) {
+      this.$emit('updateTraining', data);
+    },
+
+    updateBranchAssignmentPosition(data) {
+       
+      // get the latest branch assignment and positions from branch_assignment_positions array data
+      if(data.length)
       {
-        this.employees[this.editedIndex].employee_files.push(data);
-      }
-      else
-      {
-        this.employee_files.push(data);
+        let index = data.length - 1;
+        this.editedItem.date_assigned = data[index].date_assigned;
+
+        let branch = this.branches.filter(branch => {
+          return branch.name == data[index].branch;
+        });
+
+        let position = this.positions.filter(position => {
+          return position.name == data[index].position;
+        });
+
+        this.editedItem.branch = branch[0];
+        this.editedItem.position = position[0];
       }
       
+      this.$emit('updateBranchAssignmentPosition', data);
     },
+
+    updateIssuedNTE(data) {
+      this.$emit('updateIssuedNTE', data);
+    },
+
+    updateDisciplinaryAction(data) {
+      this.$emit('updateDisciplinaryAction', data);
+    },
+
     showAlert(msg) {
       this.$swal({
         position: "center",
@@ -1183,11 +1547,58 @@ export default {
       this.tab = 0;
       this.tab_personal_data = 0;
       this.tab_performance_management = 0;
+      this.tab_disciplinary_measure = 0;
       this.editedItem = Object.assign({}, this.defaultItem);
       this.employee_files = [];
       this.regularization_file_input = [];
       this.regularization_memo_file_input = [];
-      this.$refs.KeyPerformanceTable ? this.$refs.KeyPerformanceTable.clear() : '';
+      this.$refs.MonthlyKeyPerformance ? this.$refs.MonthlyKeyPerformance.clear() : '';
+      this.$refs.ClassroomPerformanceRating ? this.$refs.ClassroomPerformanceRating.clear() : '';
+      this.$refs.OJTPerformanceRating ? this.$refs.OJTPerformanceRating.clear() : '';
+      this.$refs.BranchAssignmentPosition ? this.$refs.BranchAssignmentPosition.clear() : '';
+      this.$refs.MeritHistory ? this.$refs.MeritHistory.clear() : '';
+      this.$refs.TrainingRedevelopment ? this.$refs.TrainingRedevelopment.clear() : '';
+      this.$refs.IssuedNTE ? this.$refs.IssuedNTE.clear() : '';
+      this.$refs.DisciplinaryAction ? this.$refs.DisciplinaryAction.clear() : '';
+    },
+    changeSaveBtnVisibility() {
+   
+      let isVisible = true;
+
+      // Tab Personal Data
+      if(this.tab == 0)
+      {
+        // if Sub Tab is Personal Information
+        if(this.tab_personal_data == 0)
+        {
+          isVisible = true;
+        }
+        else
+        {
+          isVisible = false;
+        } 
+      }
+      // Tab Performance Management
+      else if(this.tab == 2)
+      {
+        // if Sub Tab is Evaluation & Regularization under Main Tab Performance Management
+        if(this.tab_performance_management == 0)
+        {
+          isVisible = true;
+        }
+        else
+        {
+          isVisible = false;
+        } 
+      }
+      // Tab Disciplinary Measures
+      else if(this.tab == 3)
+      {
+        isVisible = false;
+      }
+
+      this.$emit('changeSaveBtnVisibility', isVisible);
+    
     },
     isUnauthorized(error) {
       // if unauthenticated (401)
@@ -1238,11 +1649,81 @@ export default {
       let age = Math.floor(difference/31557600000);
       this.editedItem.age = this.editedItem.birth_date ? age : '';      
     
-    } 
+    },
+    tab() {
+      this.changeSaveBtnVisibility();
+    },
+    tab_personal_data() {
+      this.changeSaveBtnVisibility();
+    },
+    tab_performance_management() {
+      this.changeSaveBtnVisibility();
+    }
   },
   computed: {
-    keyPerformances() {
-      return this.$refs.KeyPerformanceTable ? this.$refs.KeyPerformanceTable.monthly_key_performances : '';
+    componentsHasError() {
+      let componentArr = [
+        // 'MonthlyKeyPerformance',
+        'ClassroomPerformanceRating',
+        'OJTPerformanceRating',
+        'BranchAssignmentPosition',
+        'MeritHistory',
+        'TrainingRedevelopment',
+        'IssuedNTE',
+        'DisciplinaryAction',
+      ];
+
+      let hasError = false;
+      
+      componentArr.forEach(value => {
+
+        let component = this.$refs[value];
+        
+        // if component exists or loaded/rendered
+        if(component)
+        { 
+          // if table_action_mode has value (Add or Edit), if tab has active forms to fill out
+          if(component.$v.$error || ['Add', 'Edit'].includes(component.table_action_mode))
+          {
+            hasError = true;   
+          }
+        }
+
+      });
+
+      return hasError;
+    },
+    monthlyKeyPerformances() {
+      let refs = this.$refs.MonthlyKeyPerformance;
+      return refs ? refs.monthly_key_performances : '';
+    },
+    classroomPerformanceRatings(){
+      let refs = this.$refs.ClassroomPerformanceRating;
+      return refs ? refs.classroom_performance_ratings : '';
+    },
+    ojtPerformanceRatings() {
+      let refs = this.$refs.OJTPerformanceRating;
+      return refs ? refs.ojt_performance_ratings : '';
+    },
+    branchAssignmentPositions() {
+      let refs = this.$refs.BranchAssignmentPosition;
+      return refs ? refs.branch_assignment_positions : '';
+    },
+    meritHistories() {
+      let refs = this.$refs.MeritHistory;
+      return refs ? refs.merit_histories : '';
+    },
+    trainings() {
+      let refs = this.$refs.TrainingRedevelopment;
+      return refs ? refs.trainings : '';
+    },
+    explanations() {
+      let refs = this.$refs.IssuedNTE;
+      return refs ? refs.explanations : '';
+    },
+    disciplinaries() {
+      let refs = this.$refs.DisciplinaryAction;
+      return refs ? refs.disciplinaries : '';
     },
     branchErrors() {
       const errors = [];
@@ -1447,74 +1928,191 @@ export default {
     },
     regularizationFileErrors() {
       
-      // const errors = [];
+      const errors = [];
 
-      // let file = this.regularization_file_input;
-      // let extensions = ['docs', 'docx', 'pdf', 'jpg', 'jpeg', 'png'];
-      // let errorMsg = "";
-      // let fileInvalid = false;
+      let file = this.regularization_file_input;
+      let extensions = ['docs', 'docx', 'pdf', 'jpg', 'jpeg', 'png'];
+      let errorMsg = "";
+      let fileInvalid = false;
     
-      // if(file)
-      // {
-      //   if(file.name)
-      //   {
-      //     let split_arr = file.name.split('.');
-      //     let split_ctr = split_arr.length;
-      //     let extension = split_arr[split_ctr - 1].toLowerCase();
+      if(file)
+      {
+        if(file.name)
+        {
+          let split_arr = file.name.split('.');
+          let split_ctr = split_arr.length;
+          let extension = split_arr[split_ctr - 1].toLowerCase();
           
-      //     if(!extensions.includes(extension))
-      //     {
-      //       fileInvalid = true;
-      //       errorMsg = `File type must be ${extensions.join(', ')}.`;
-      //     }
+          if(!extensions.includes(extension))
+          {
+            fileInvalid = true;
+            errorMsg = `File type must be ${extensions.join(', ')}.`;
+          }
 
-      //     if(file.size > 5000000) // 5000000 bytes or 20MB
-      //     {
-      //       errorMsg = "File size maximum is 5MB";
-      //       fileInvalid = true;
-      //     }
-      //   }
-      // }
-      // this.fileInvalid = fileInvalid;
-      // fileInvalid && errors.push(errorMsg);
+          if(file.size > 5000000) // 5000000 bytes or 20MB
+          {
+            errorMsg = "File size maximum is 5MB";
+            fileInvalid = true;
+          }
+        }
+      }
+      this.fileInvalid = fileInvalid;
+      fileInvalid && errors.push(errorMsg);
 
-      // return errors
+      return errors
         
     },
     regularizationMemoFileErrors() {
       
-      // const errors = [];
+      const errors = [];
 
-      // let file = this.regularization_memo_file_input;
-      // let extensions = ['docs', 'docx', 'pdf', 'jpg', 'jpeg', 'png'];
-      // let errorMsg = "";
-      // let fileInvalid = false;
+      let file = this.regularization_memo_file_input;
+      let extensions = ['docs', 'docx', 'pdf', 'jpg', 'jpeg', 'png'];
+      let errorMsg = "";
+      let fileInvalid = false;
     
-      // if(file)
-      // {
-      //   if(file.name)
-      //   {
-      //     let split_arr = file.name.split('.');
-      //     let split_ctr = split_arr.length;
-      //     let extension = split_arr[split_ctr - 1].toLowerCase();
+      if(file)
+      {
+        if(file.name)
+        {
+          let split_arr = file.name.split('.');
+          let split_ctr = split_arr.length;
+          let extension = split_arr[split_ctr - 1].toLowerCase();
           
-      //     if(!extensions.includes(extension))
-      //     {
-      //       fileInvalid = true;
-      //       errorMsg = `File type must be ${extensions.join(', ')}.`;
-      //     }
+          if(!extensions.includes(extension))
+          {
+            fileInvalid = true;
+            errorMsg = `File type must be ${extensions.join(', ')}.`;
+          }
 
-      //     if(file.size > 5000000) // 5000000 bytes or 20MB
-      //     {
-      //       errorMsg = "File size maximum is 5MB";
-      //       fileInvalid = true;
-      //     }
-      //   }
-      // }
-      // this.fileInvalid = fileInvalid;
-      // fileInvalid && errors.push(errorMsg);
+          if(file.size > 5000000) // 5000000 bytes or 20MB
+          {
+            errorMsg = "File size maximum is 5MB";
+            fileInvalid = true;
+          }
+        }
+      }
+      this.fileInvalid = fileInvalid;
+      fileInvalid && errors.push(errorMsg);
 
-      // return errors
+      return errors
+        
+    },
+    lastDayOfWorkErrors() {
+      const errors = [];
+
+      if(this.dateErrors.last_day_of_work.msg)
+      {
+        errors.push(this.dateErrors.last_day_of_work.msg);
+      }
+      return errors;
+    },
+    lastDayFileErrors() {
+      
+      const errors = [];
+
+      let file = this.last_day_of_work_file_input;
+      let extensions = ['docs', 'docx', 'pdf', 'jpg', 'jpeg', 'png'];
+      let errorMsg = "";
+      let fileInvalid = false;
+    
+      if(file)
+      {
+        if(file.name)
+        {
+          let split_arr = file.name.split('.');
+          let split_ctr = split_arr.length;
+          let extension = split_arr[split_ctr - 1].toLowerCase();
+          
+          if(!extensions.includes(extension))
+          {
+            fileInvalid = true;
+            errorMsg = `File type must be ${extensions.join(', ')}.`;
+          }
+
+          if(file.size > 5000000) // 5000000 bytes or 20MB
+          {
+            errorMsg = "File size maximum is 5MB";
+            fileInvalid = true;
+          }
+        }
+      }
+      this.fileInvalid = fileInvalid;
+      fileInvalid && errors.push(errorMsg);
+
+      return errors
+        
+    },
+    clearanceFileErrors() {
+      
+      const errors = [];
+
+      let file = this.clearance_file_input;
+      let extensions = ['docs', 'docx', 'pdf', 'jpg', 'jpeg', 'png'];
+      let errorMsg = "";
+      let fileInvalid = false;
+    
+      if(file)
+      {
+        if(file.name)
+        {
+          let split_arr = file.name.split('.');
+          let split_ctr = split_arr.length;
+          let extension = split_arr[split_ctr - 1].toLowerCase();
+          
+          if(!extensions.includes(extension))
+          {
+            fileInvalid = true;
+            errorMsg = `File type must be ${extensions.join(', ')}.`;
+          }
+
+          if(file.size > 5000000) // 5000000 bytes or 20MB
+          {
+            errorMsg = "File size maximum is 5MB";
+            fileInvalid = true;
+          }
+        }
+      }
+      this.fileInvalid = fileInvalid;
+      fileInvalid && errors.push(errorMsg);
+
+      return errors
+        
+    },
+    quitClaimFileErrors() {
+      
+      const errors = [];
+
+      let file = this.quitclaim_file_input;
+      let extensions = ['docs', 'docx', 'pdf', 'jpg', 'jpeg', 'png'];
+      let errorMsg = "";
+      let fileInvalid = false;
+    
+      if(file)
+      {
+        if(file.name)
+        {
+          let split_arr = file.name.split('.');
+          let split_ctr = split_arr.length;
+          let extension = split_arr[split_ctr - 1].toLowerCase();
+          
+          if(!extensions.includes(extension))
+          {
+            fileInvalid = true;
+            errorMsg = `File type must be ${extensions.join(', ')}.`;
+          }
+
+          if(file.size > 5000000) // 5000000 bytes or 20MB
+          {
+            errorMsg = "File size maximum is 5MB";
+            fileInvalid = true;
+          }
+        }
+      }
+      this.fileInvalid = fileInvalid;
+      fileInvalid && errors.push(errorMsg);
+
+      return errors
         
     },
     activeStatus() {
@@ -1532,8 +2130,45 @@ export default {
     regularizationMemoFile() {
       return this.employee_files.find((value) => value.title == 'Memo of Regularization');
     },
+    lastDayFile() {
+      return this.employee_files.find((value) => value.title == 'Last Day of Work');
+    },
+    clearanceFile() {
+      return this.employee_files.find((value) => value.title == 'Clearance');
+    },
+    quitClaimFile() {
+      return this.employee_files.find((value) => value.title == 'Quitclaim');
+    },
     tabCSS() {
       return "color: #1E88E5 !important; background-color: white !important;";
+    },
+    resignationReasons() {
+      return [
+        'To Work Abroad',
+        'End of Contract',
+        'AWOL',
+        'To Work in other Company',
+        'Family Reasons/Problems',
+        'To Work in Government',
+        'Due to Suspension',
+        'Personal Matter/Reason',
+        'Pressure at Work',
+        'To Study',
+        'Change of Family Residence',
+        'Conflict w/ Co-Employees',
+        'Dismissal',
+        'Due to pregnancy',
+        'Far Work Place',
+        'Health Condition',
+        'To Put Up Business',
+        'Death',
+        'Failed in Training Program',
+        'Low Salary',
+        'Prioritize physical & mental health',
+        'Problem with Coor/Agency',
+        'Re-training',
+        'Others (Specify)',
+      ];
     },
     ...mapGetters("userRolesPermissions", ["hasRole", "hasAnyRole", "hasPermission", "hasAnyPermission"]),
   },
@@ -1546,9 +2181,18 @@ export default {
 
       this.editedItem = Object.assign({}, this.data);
       this.originalItem = Object.assign({}, this.data);
-
       this.employee_files = this.files;
-      this.monthly_key_performances = this.key_performances;
+
+      let reason_of_resignation = this.data.reason_of_resignation;
+
+      if(reason_of_resignation && !this.resignationReasons.includes(reason_of_resignation))
+      {
+        this.editedItem.reason_of_resignation = 'Others (Specify)';
+        this.editedItem.specified_reason_of_resignation = reason_of_resignation;
+      }
+      
+      this.updateBranchAssignmentPosition(this.data.branch_assignment_positions);
+    
     }  
     
     this.removedFiles = [];

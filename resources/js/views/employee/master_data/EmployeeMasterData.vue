@@ -213,6 +213,10 @@
               <v-card-title class="pa-4">
                 <span class="headline">{{ formTitle }}</span>
                 <v-spacer></v-spacer>
+                <p class="ma-0 p-0 subtitle-1 font-italic font-weight-bold red--text text--darken-red-1" v-if="formHasError">
+                  Check errors and fill out all required fields in all Tabs!
+                </p>
+                <v-spacer></v-spacer>
                 <v-btn @click="close()" icon>
                   <v-icon> mdi-close </v-icon>
                 </v-btn>
@@ -222,18 +226,26 @@
                 <EmployeeInformationTabs
                   :data="editedItem"
                   :files="employee_files"
-                  :key_performances="monthly_key_performances"
                   :editedIndex="editedIndex"
                   :positions="positions"
                   :branches="branches"
                   :departments="departments"
                   @openAttachFileDialog="openAttachFileDialog"
+                  @updateMonthlyKeyPerformance="updateMonthlyKeyPerformance"
+                  @updateClassroomPerformanceRating="updateClassroomPerformanceRating"
+                  @updateOJTPerformanceRating="updateOJTPerformanceRating"
+                  @updateBranchAssignmentPosition="updateBranchAssignmentPosition"
+                  @updateMeritHistory="updateMeritHistory"
+                  @updateTraining="updateTraining"
+                  @updateIssuedNTE="updateIssuedNTE"
+                  @updateDisciplinaryAction="updateDisciplinaryAction"
+                  @changeSaveBtnVisibility="changeSaveBtnVisibility"
                   ref="EmployeeInformationTabs"
                   :key="employeeInformationComponentKey"
                 />
               </v-card-text>
               <v-divider class="mb-3 mt-0"></v-divider>
-              <v-card-actions class="pa-0">
+              <v-card-actions class="pa-0 pr-4">
                 <v-spacer></v-spacer>
                 <v-btn color="#E0E0E0" @click="close()" class="mb-3">
                   Cancel
@@ -242,7 +254,8 @@
                   color="primary"
                   @click="save"
                   :disabled="disabled"
-                  class="mb-3 mr-4"
+                  class="mb-3"
+                  v-if="saveBtnIsVisible"
                 >
                   Save
                 </v-btn>
@@ -359,7 +372,6 @@ export default {
       dialog: false,
       employees: [],
       employee_files: [],
-      monthly_key_performances: [],
       branches: [],
       departments: [],
       positions: [],
@@ -418,6 +430,8 @@ export default {
       attach_file_dialog: false,
       employeeInformationComponentKey: 0,
       employee_files_error: [],
+      formHasError: false,
+      saveBtnIsVisible: true,
     };
   },
 
@@ -443,7 +457,7 @@ export default {
         }
       );
     },
-    editEmployee(item) {
+    editEmployee(item) {      
       
       this.editedItem.gender = item.gender.toUpperCase();
       this.editedItem.civil_status = item.civil_status.toUpperCase();
@@ -457,7 +471,9 @@ export default {
       this.employee_files = item.files;
       this.employeeInformationComponentKey += 1;
 
-      this.monthly_key_performances = item.key_performances;
+      this.monthly_key_performances = item.monthly_key_performances;
+      this.classroom_performance_ratings = item.classroom_performance_ratings;
+      this.ojt_performance_ratings = item.ojt_performance_ratings;
 
       // let [month, day, year] = this.editedItem.dob.split("/");
       // this.editedItem.birth_date = `${year}-${month}-${day}`;
@@ -473,6 +489,8 @@ export default {
       
       axios.post("/api/employee_master_data/delete", data).then(
         (response) => {
+          console.log(response.data);
+          
           if (response.data.success) {
             // send data to Sockot.IO Server
             // this.$socket.emit("sendData", { action: "employee-master-data-delete" });
@@ -490,11 +508,16 @@ export default {
 
       let EmployeeInformationTabs = this.$refs.EmployeeInformationTabs;
 
+      // check if child components has active forms
+      EmployeeInformationTabs.touchChildComponentForms();
+      
       let dateModelHasErrors = Object.values(EmployeeInformationTabs.dateErrors).map((obj) => obj.status).includes(true);
 
       EmployeeInformationTabs.$v.editedItem.$touch();
-      
-      if (!EmployeeInformationTabs.$v.editedItem.$error && !dateModelHasErrors) {
+
+      if (!EmployeeInformationTabs.$v.editedItem.$error && !EmployeeInformationTabs.componentsHasError && !dateModelHasErrors) {
+        
+        this.formHasError = false;
 
         this.disabled = true;
         this.overlay = true;
@@ -508,7 +531,8 @@ export default {
             this.overlay = false;
             this.disabled = false;
             let data = response.data;
-    
+            console.log(data);
+            
             if(data.employee_files_error)
             {
               this.employee_files_error = data.employee_files_error;
@@ -550,6 +574,10 @@ export default {
           }
         );
       }
+      else
+      {
+        this.formHasError = true;
+      }
     },
 
     formData(){
@@ -575,6 +603,13 @@ export default {
       
       formData.append('active', activeStatus);
 
+      // specified reason of resignation
+      if(data.reason_of_resignation == 'Others (Specify)')
+      {
+        let specified_reason_of_resignation = data.specified_reason_of_resignation ? data.specified_reason_of_resignation : '';
+        formData.append('reason_of_resignation', specified_reason_of_resignation); 
+      }
+
       if(this.editedIndex == -1) //ADD MODE
       {
         let employee_files = EmployeeInformationTabs.employee_files;   
@@ -599,12 +634,99 @@ export default {
         formData.append('document_types[]', 'Memo of Regularization');
       }
 
-      if(EmployeeInformationTabs.keyPerformances)
+      let monthly_key_performances = EmployeeInformationTabs.monthlyKeyPerformances;
+      if(monthly_key_performances)
       {
-        let monthly_key_performances = EmployeeInformationTabs.keyPerformances;
         formData.append('monthly_key_performances', JSON.stringify(monthly_key_performances));
       }
 
+      let classroom_performance_ratings = EmployeeInformationTabs.classroomPerformanceRatings;
+      if(classroom_performance_ratings)
+      {
+        formData.append('classroom_performance_ratings', JSON.stringify(classroom_performance_ratings));
+      }
+
+      let ojt_performance_ratings = EmployeeInformationTabs.ojtPerformanceRatings;
+      if(ojt_performance_ratings)
+      {
+        formData.append('ojt_performance_ratings', JSON.stringify(ojt_performance_ratings));
+      }
+
+      let branch_assignment_positions = EmployeeInformationTabs.branchAssignmentPositions;
+      if(branch_assignment_positions)
+      {
+        formData.append('branch_assignment_positions', JSON.stringify(branch_assignment_positions));
+      }
+
+      let merit_histories = EmployeeInformationTabs.meritHistories;
+      if(merit_histories)
+      {
+        formData.append('merit_histories', JSON.stringify(merit_histories));
+      }
+
+      let trainings = EmployeeInformationTabs.trainings;
+      if(trainings)
+      {
+        formData.append('trainings', JSON.stringify(trainings));
+      }
+
+      let explanations = EmployeeInformationTabs.explanations;
+      if(explanations)
+      {
+        formData.append('explanations', JSON.stringify(explanations));
+        explanations.forEach((item, i) => {
+          if(item.nte_file)
+          {
+            formData.append('nte_files['+i+']', item.nte_file);
+          }
+
+          if(item.explanation_file)
+          {
+            formData.append('explanation_files['+i+']', item.explanation_file);
+          }
+          
+        });
+        
+      }
+
+      let disciplinaries = EmployeeInformationTabs.disciplinaries;
+      if(disciplinaries)
+      {
+        formData.append('disciplinaries', JSON.stringify(disciplinaries));
+        disciplinaries.forEach((item, i) => {
+          if(item.file)
+          {
+            formData.append('disciplinary_files['+i+']', item.file);
+          }
+          
+        });
+        
+      }
+
+      let last_day_of_work_file_input = EmployeeInformationTabs.last_day_of_work_file_input;
+      
+      if(last_day_of_work_file_input.name)
+      {
+        formData.append('employee_files[]', last_day_of_work_file_input);
+        formData.append('document_types[]', 'Last Day of Work');
+      }
+
+      let clearance_file_input = EmployeeInformationTabs.clearance_file_input;
+      
+      if(clearance_file_input.name)
+      {
+        formData.append('employee_files[]', clearance_file_input);
+        formData.append('document_types[]', 'Clearance');
+      }
+
+      let quitclaim_file_input = EmployeeInformationTabs.quitclaim_file_input;
+      
+      if(quitclaim_file_input.name)
+      {
+        formData.append('employee_files[]', quitclaim_file_input);
+        formData.append('document_types[]', 'Quitclaim');
+      }
+      
       return formData;
     },
 
@@ -665,6 +787,8 @@ export default {
       let EmployeeInformationTabs = this.$refs.EmployeeInformationTabs
       EmployeeInformationTabs.clear();
       
+      this.formHasError = false;
+      
     },
 
     closeImportDialog() {
@@ -702,6 +826,38 @@ export default {
       
     },
 
+    updateMonthlyKeyPerformance(data) {
+      this.employees[this.editedIndex].monthly_key_performances = data;
+    },
+
+    updateClassroomPerformanceRating(data) {
+      this.employees[this.editedIndex].classroom_performance_ratings = data;
+    },
+
+    updateOJTPerformanceRating(data) {
+      this.employees[this.editedIndex].ojt_performance_ratings = data;
+    },
+
+    updateBranchAssignmentPosition(data) {
+      this.employees[this.editedIndex].branch_assignment_positions = data;
+    },
+
+    updateMeritHistory(data) {
+      this.employees[this.editedIndex].merit_histories = data;
+    },
+
+    updateTraining(data) {
+      this.employees[this.editedIndex].trainings = data;
+    },
+
+    updateIssuedNTE(data) {
+      this.employees[this.editedIndex].explanations = data;
+    },
+
+    updateDisciplinaryAction(data) {
+      this.employees[this.editedIndex].disciplinary_actions = data;
+    },
+
     isUnauthorized(error) {
       // if unauthenticated (401)
       if (error.response.status == "401") {
@@ -734,6 +890,17 @@ export default {
     },
     selectUnselect(status) {
       
+    },
+    changeSaveBtnVisibility(isVisible) {
+      if(this.editedIndex > -1)
+      {
+        this.saveBtnIsVisible = isVisible;
+      }
+      else
+      {
+        // if ADD Mode default value is true
+        this.saveBtnIsVisible = true;
+      }
     },
     websocket() {
       // Socket.IO fetch data
@@ -974,6 +1141,7 @@ export default {
     });
 
     this.getEmployee();
+
   },
 };
 </script>

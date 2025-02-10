@@ -17,13 +17,11 @@ class AccessChart extends Model
         //                 ( <Model>, <id_of_specified_Model>, <id_of_this_model> )
     }
 
-    
     public function access_module()
     {
         return $this->hasOne('App\AccessModule', 'id', 'access_for');
         //                 ( <Model>, <id_of_specified_Model>, <id_of_this_model> )
     }
-
 
     public function approver_per_level()
     {

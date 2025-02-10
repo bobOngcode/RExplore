@@ -64,33 +64,58 @@ class EmployeeMasterData extends Model
         //                 ( <Model>, <id_of_specified_Model>, <id_of_this_model> )
     }
 
-    public function key_performances()
+    public function monthly_key_performances()
     {
         return $this->hasMany('App\EmployeeKeyPerformance', 'employee_id', 'id');
         //                 ( <Model>, <id_of_specified_Model>, <id_of_this_model> )
     }
 
-    public function disciplinary_measures()
+    public function classroom_performance_ratings()
     {
-        return $this->hasOne('App\EmployeeDisciplinaryMeasures', 'employee_id', 'id');
+        return $this->hasMany('App\EmployeeClassroomPerformanceRating', 'employee_id', 'id');
         //                 ( <Model>, <id_of_specified_Model>, <id_of_this_model> )
     }
 
-    public function employment_histories()
+    public function ojt_performance_ratings()
     {
-        return $this->hasOne('App\EmployeeEmploymentHistory', 'employee_id', 'id');
+        return $this->hasMany('App\EmployeeOjtPerformanceRating', 'employee_id', 'id');
+        //                 ( <Model>, <id_of_specified_Model>, <id_of_this_model> )
+    }
+
+    public function branch_assignment_positions()
+    {
+        return $this->hasMany('App\EmployeeBranchAssignmentPosition', 'employee_id', 'id');
         //                 ( <Model>, <id_of_specified_Model>, <id_of_this_model> )
     }
 
     public function merit_histories()
     {
-        return $this->hasOne('App\EmployeeMeritHistory', 'employee_id', 'id');
+        return $this->hasMany('App\EmployeeMeritHistory', 'employee_id', 'id');
+        //                 ( <Model>, <id_of_specified_Model>, <id_of_this_model> )
+    }
+    
+    public function trainings()
+    {
+        return $this->hasMany('App\EmployeeTraining', 'employee_id', 'id');
         //                 ( <Model>, <id_of_specified_Model>, <id_of_this_model> )
     }
 
-    public function trainings()
+    public function explanations()
     {
-        return $this->hasOne('App\EmployeeTraining', 'employee_id', 'id');
+        return $this->hasMany('App\EmployeeExplanation', 'employee_id', 'id');
         //                 ( <Model>, <id_of_specified_Model>, <id_of_this_model> )
     }
+
+    public function disciplinaries()
+    {
+        return $this->hasMany('App\EmployeeDisciplinary', 'employee_id', 'id');
+        //                 ( <Model>, <id_of_specified_Model>, <id_of_this_model> )
+    }
+
+    public function employment_histories()
+    {
+        return $this->hasMany('App\EmployeeEmploymentHistory', 'employee_id', 'id');
+        //                 ( <Model>, <id_of_specified_Model>, <id_of_this_model> )
+    }
+
 }

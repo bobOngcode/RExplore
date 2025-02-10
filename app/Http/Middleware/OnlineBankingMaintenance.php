@@ -3,7 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Support\Facades\Auth;
+use Auth;
 
 class OnlineBankingMaintenance
 {
@@ -35,17 +35,16 @@ class OnlineBankingMaintenance
         }
 
 
-        //Online Banking Approve/Disapprove
+        //Online Banking Approve / Disapprove
         if ($request->is($request->is('api/onlinebanking/approve')) || $request->is($request->is('api/onlinebanking/disapprove')) || $request->is($request->is('api/onlinebanking/download'))) {
             if ($user->can('online-banking-approve') || $user->can('online-banking-disapprove')) {
                 return $next($request);
             }
         }
 
-
-        //Online Banking Delete
-        if ($request->is($request->is('api/onlinebanking/delete'))) {
-            if ($user->can('online-banking-delete')) {
+        //Online Banking Delete / Delete Signature
+        if ($request->is($request->is('api/onlinebanking/delete')) || $request->is($request->is('api/onlinebanking/deletesignature'))) {
+            if ($user->can('online-banking-delete') || $user->can('online-banking-delete-signature')) {
                 return $next($request);
             }
         }

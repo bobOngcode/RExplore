@@ -4,8 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-// use Auth;
-use Illuminate\Support\Facades\Auth;
+use Auth;
 use App\Branch;
 use App\MarketingEvent;
 use App\MarketingApproverPerLevel;
@@ -39,33 +38,30 @@ class TacticalRequisitionController extends Controller
                                         ->whereHas('marketing_event_user_maps', function($query){
                                             $query->whereIn('user_id', [Auth::id()]);
                                         })->get()->count();
-
         
         $tactical_requisitions = TacticalRequisition::with('branch')
-                                    ->with('user')
-                                    ->with('marketing_event')
-                                    ->with('marketing_event.marketing_event_user_maps')
-                                    ->with('marketing_event.marketing_event_user_maps.user')
-                                    ->with('marketing_event.approver_per_level') 
-                                    ->with('approved_logs')
-                                    ->with('approved_logs.approver')
-                                    ->selectRaw("*, DATE_FORMAT(created_at, '%m/%d/%Y') as date_created, DATE_FORMAT(date_approve, '%m/%d/%Y') as date_approved")
-                                    ->whereHas('user', function($query) use ($approver_ctr){    
-                                            
-                                        // if approver_ctr === 0 (no approver) or not admin user then select record where user_id == Auth::id()
-                                        if($approver_ctr === 0)
-                                        {   
-                                            if(Auth::id() != 1)
-                                            {
-                                                $query->where('id', '=', Auth::id());// user who created tactical requisition if not approver
-                                            }
-                                        }
-                                    })
-                                    ->orderBy('created_at', 'Desc')
-                                    ->get();      
+                                                    ->with('user')
+                                                    ->with('marketing_event')
+                                                    ->with('marketing_event.marketing_event_user_maps')
+                                                    ->with('marketing_event.marketing_event_user_maps.user')
+                                                    ->with('marketing_event.approver_per_level') 
+                                                    ->with('approved_logs')
+                                                    ->with('approved_logs.approver')
+                                                    ->selectRaw("*, DATE_FORMAT(created_at, '%m/%d/%Y') as date_created, DATE_FORMAT(date_approve, '%m/%d/%Y') as date_approved")
+                                                    ->whereHas('user', function($query) use ($approver_ctr){    
+                                                         
+                                                        // if approver_ctr === 0 (no approver) or not admin user then select record where user_id == Auth::id()
+                                                        if($approver_ctr === 0)
+                                                        {   
+                                                            if(Auth::id() != 1)
+                                                            {
+                                                                $query->where('id', '=', Auth::id());// user who created tactical requisition if not approver
+                                                            }
+                                                        }
 
-
-
+                                                    })
+                                                    ->orderBy('created_at', 'Desc')
+                                                    ->get();      
 
         $data = $tactical_requisitions;
 
@@ -78,7 +74,6 @@ class TacticalRequisitionController extends Controller
         foreach ($tactical_requisitions as $tactical) {
             
             $level = [];
-
             $approver_per_level =  $tactical->marketing_event->approver_per_level;
             
             foreach ($approver_per_level as $apprvr_per_lvl) {
@@ -114,8 +109,6 @@ class TacticalRequisitionController extends Controller
             }
 
             $approvers = $tactical->marketing_event->marketing_event_user_maps;
-
-            
             
             // get the approver id (user_id) where level == min($level)
        
@@ -170,11 +163,9 @@ class TacticalRequisitionController extends Controller
             }
 
         }
-        
     
         $approval_progress = [];
         $id = [];
-
         // get the approval progress per record
         foreach ($tactical_requisitions as $tactical) {
             
@@ -604,7 +595,6 @@ class TacticalRequisitionController extends Controller
         $tactical_requisition_id = $request->get('tactical_requisition_id');
 
         $date_now = Carbon::now()->format('Y-m-d');
-
         $user_can_approve_tactical = Auth::user()->can('tactical-requisition-approve');
 
         $tactical_requisition = TacticalRequisition::where('id', '=', $tactical_requisition_id)
@@ -612,9 +602,7 @@ class TacticalRequisitionController extends Controller
                                                     ->with('marketing_event.marketing_event_user_maps')
                                                     ->with('marketing_event.marketing_event_user_maps.user')
                                                     ->get()->first();
-                                                    
         $marketing_event_id = $tactical_requisition->marketing_event->id;
-        
         // get access chart tactical requisition approver
         $access_chart = AccessChart::where('name', '=', 'Tactical Requisition')->get()->first();
 

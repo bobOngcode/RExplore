@@ -73,6 +73,13 @@ class Kernel extends HttpKernel
         'division.maintenance' => \App\Http\Middleware\DivisionMaintenance::class,
         'employee.master.data.maintenance' => \App\Http\Middleware\EmployeeMasterDataMaintenance::class,
         'employee.key.performance.maintenance' => \App\Http\Middleware\EmployeeKeyPerformanceMaintenance::class,
+        'employee.classroom.performance.rating.maintenance' => \App\Http\Middleware\EmployeeClassroomPerformanceRatingMaintenance::class,
+        'employee.ojt.performance.rating.maintenance' => \App\Http\Middleware\EmployeeOjtPerformanceRatingMaintenance::class,            
+        'employee.branch.assignment.position.maintenance' => \App\Http\Middleware\EmployeeBranchAssignmentPositionMaintenance::class,            
+        'employee.merit.history.maintenance' => \App\Http\Middleware\EmployeeMeritHistoryMaintenance::class,
+        'employee.training.maintenance' => \App\Http\Middleware\EmployeeTrainingMaintenance::class,
+        'employee.nte.maintenance' => \App\Http\Middleware\EmployeeNTEMaintenance::class,
+        'employee.disciplinary.maintenance' => \App\Http\Middleware\EmployeeDisciplinaryMaintenance::class,
         'employee.maintenance' => \App\Http\Middleware\EmployeeMaintenance::class,
         'employee.loans.maintenance' => \App\Http\Middleware\EmployeeLoansMaintenance::class,
         'employee.premiums.maintenance' => \App\Http\Middleware\EmployeePremiumsMaintenance::class,
@@ -92,7 +99,7 @@ class Kernel extends HttpKernel
         'access_chart_user_map.maintenance' => \App\Http\Middleware\AccessChartUserMapMaintenance::class,
         'training_file.maintenance' => \App\Http\Middleware\TrainingFileMaintenance::class,
         'sap_database.maintenance' => \App\Http\Middleware\SAPDatabaseMaintenance::class,
+        'online_banking.maintenance' => \App\Http\Middleware\OnlineBankingMaintenance::class,
         'activity.logs' => \App\Http\Middleware\ActivityLogs::class,
-        'online_banking.maintenance' => \App\Http\Middleware\OnlineBankingMaintenance::class, //for additional online banking
     ];
 }

@@ -370,7 +370,7 @@
 
                       </v-row>
                     </v-col>
-                    
+
                   </v-row>
                 </v-container>
               </template>
@@ -432,8 +432,8 @@
 
 
                     <v-col :cols="12" :md="6" v-if="!form_request.DELETION">
-                      <v-text-field :readonly="readonly" v-model="form_request.check_series" type="text" 
-                      name="account#" label="Check Series #">
+                      <v-text-field :readonly="readonly" v-model="form_request.check_series" type="text" name="account#"
+                        label="Check Series #">
                       </v-text-field>
                     </v-col>
 
@@ -504,6 +504,10 @@
 
                       </template>
                       <template v-else>
+                        <v-btn v-if="hasAnyPermission('online-banking-delete-signature') && imgpreview" class="w-auto text-danger  m-1 mt-3"
+                          @click="showDeleteConfirmAlert(form_request, editedIndex)">
+                          Deelete User E-Signature
+                        </v-btn><br>
                         <b>
                           <u>
                             ___{{ username }}___
@@ -1583,6 +1587,32 @@ export default {
 
     },
 
+    showDeleteConfirmAlert(item, index) {
+      this.$swal({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "red",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "<span style='color: white;'>Delete Signature</span>",
+        cancelButtonText: "<span style='color: white;'>Cancel</span>",
+      }).then((result) => {
+        if (result.value) {
+          this.deletesignature();
+          this.$swal.fire({
+            icon: "success",
+            title: "Signature has been DELETED",
+            text: "Signature Deleted successfully",
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+          });
+        }
+      });
+    },
 
     showConfirmAlert(item, index) {
       this.$swal({
@@ -1619,6 +1649,21 @@ export default {
         (response) => {
           this.loading = false;
           this.dialog = false;
+          this.getBankingRequest();
+        },
+        (error) => {
+          this.isUnauthorized(error);
+        }
+      );
+    },
+
+    deletesignature() {
+      const data = { id: this.editedIndex };
+      this.loading = true;
+      axios.post("/api/onlinebanking/deletesignature", data).then(
+        (response) => {
+          // this.loading = false;
+          // this.dialog = false;
           this.getBankingRequest();
         },
         (error) => {

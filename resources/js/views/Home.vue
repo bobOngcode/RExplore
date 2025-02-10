@@ -134,7 +134,6 @@
         </v-list-item> -->
       </v-list>
     </v-navigation-drawer>
-
     <v-dialog v-model="dialog_sync" max-width="500px" persistent>
       <v-card>
         <v-card-text>
@@ -169,7 +168,6 @@
         indeterminate
       ></v-progress-circular>
     </v-overlay>
-
     <!-- Content -->
     <router-view />
     <v-footer padless dense dark app>
@@ -370,11 +368,9 @@ export default {
   },
 
   computed: {
-
     menuList() {
       
       let menu = [
-
         { // START Dashboard
           group_header_title: 'Dashboard',
           hasPermission: false,
@@ -389,7 +385,6 @@ export default {
             },
           ]
         }, // END Dashboard
-
         { // START Inventory / Purchasing group menu
           group_header_title: 'Inventory / Purchasing',
           hasPermission: false,
@@ -522,8 +517,6 @@ export default {
                 },
               ],
             },
-
-
             {
               title: 'Training',
               icon: 'mdi-folder-multiple-outline',
@@ -545,7 +538,6 @@ export default {
             }
           ]
         }, // END HR/ Payroll group menu
-
         { // START Sales & Marketing group menu
           group_header_title: 'Sales & Marketing',
           hasPermission: false,
@@ -603,7 +595,6 @@ export default {
           ]
         }, // END Motorpool
 
-
         { // START EXPENSES & ACCOUNTS PAYABLE
           group_header_title: 'Expense & Accounts Payable ',
           hasPermission: false,
@@ -624,8 +615,7 @@ export default {
             },
           ]
         }, // END PAYABLES
-
-
+        
         { // START Set Up & Athorization group menu
           group_header_title: 'Set Up & Authorizations',
           hasPermission: false,
@@ -724,8 +714,6 @@ export default {
             },
           ],
         }, // END Set Up & Athorization group menu
-
-
         { // START SAP Business One group menu
           group_header_title: 'SAP Business One',
           hasPermission: false,

@@ -3,6 +3,9 @@
 /public/js/
 /public/css/
 /public/storage
+/public/*.js
+/public/*.txt
+/public/wysiwyg/
 /storage/*.key
 /vendor
 .env

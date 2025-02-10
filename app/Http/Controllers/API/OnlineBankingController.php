@@ -223,7 +223,7 @@ class OnlineBankingController extends Controller
         // get the approval progress per record
         foreach ($bankingrequest as $banking) {
             $progress = [];
-           
+
             $isDisapproved = false;
             $approver_per_level = $banking->access_chart ?  $banking->access_chart->approver_per_level : [];
 
@@ -267,15 +267,9 @@ class OnlineBankingController extends Controller
 
                 if ($banking->status === 'On Process') {
                     $onprocess_progress[] = ['level' => $apprvr_per_lvl->level, 'status' => $status, 'approver' => $approver];
-                }
-
-
-                else if ($banking->status === 'Approved') {
+                } else if ($banking->status === 'Approved') {
                     $approved_progress[] = ['level' => $apprvr_per_lvl->level, 'status' => $status, 'approver' => $approver];
-                } 
-
-
-                else if ($banking->status === 'Disapproved') {
+                } else if ($banking->status === 'Disapproved') {
                     $disapproved_progress[] = ['level' => $apprvr_per_lvl->level, 'status' => $status, 'approver' => $approver];
                 }
 
@@ -284,7 +278,6 @@ class OnlineBankingController extends Controller
             }
 
             $approval_progress[] = ['banking_request_id' => $banking->id, 'progress' => $progress];
-
         }
 
 
@@ -317,9 +310,7 @@ class OnlineBankingController extends Controller
                 } else if ($user_access_level != 1) {
 
                     $pendings[] = $banking;
-                    
                 }
-
             }
 
 
@@ -564,7 +555,7 @@ class OnlineBankingController extends Controller
             $user_signature->file_path = $file_path;
             $user_signature->file_type = $file_extension;
             $user_signature->save();
-
+            
             $file->move(public_path() . $file_path, $file_name);
 
             // $directory = public_path() . $file_path;
@@ -860,6 +851,44 @@ class OnlineBankingController extends Controller
             'title' => 'The request has been deleted',
             'text' => 'Deleted successfully.',
         ], 200);
+    }
 
+
+    public function deletesignature(Request $request)
+    {
+        $onlinebank_id = OnlineBank::select('user_id')
+            ->where('id', $request->id)
+            ->first();
+
+        if ($onlinebank_id) {
+            $user_signatures = UserSignature::where('user_id', $onlinebank_id->user_id)->get();
+
+            if ($user_signatures->isNotEmpty()) {
+                $user_signatures->each(function ($signature) {
+                    $signature->delete();
+
+                    $imagePath = public_path('img/e_signature/' . $signature->e_signature);
+
+                    if (file_exists($imagePath)) {
+                        unlink($imagePath);
+                    }
+                });
+            }
+        } else {
+
+            return response()->json([
+                'success' => false,
+                'status' => 'error',
+                'title' => 'No matching online bank entry found',
+                'text' => 'Please Contact Adminitrator.',
+            ], 200);
+        }
+
+        return response()->json([
+            'success' => true,
+            'status' => 'success',
+            'title' => 'The user signature has been deleted',
+            'text' => 'Deleted successfully.',
+        ], 200);
     }
 }

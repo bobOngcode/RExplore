@@ -15,6 +15,7 @@ import InventoryOnHand from './views/inventory/inventory_on_hand/InventoryOnHand
 import InventoryReconciliation from './views/inventory/reconciliation/InventoryReconciliation.vue';
 import InventoryDiscrepancy from './views/inventory/reconciliation/InventoryDiscrepancy.vue';
 import InventoryBreakdown from './views/inventory/reconciliation/InventoryBreakdown.vue';
+import OnlineBankingRequest from './views/expense_&_accounts_payable/online_banking/request_form.vue';
 import BrandIndex from './views/brand/BrandIndex.vue';
 import PositionIndex from './views/position/PositionIndex.vue';
 import RankIndex from './views/rank/RankIndex.vue';
@@ -42,7 +43,6 @@ import TacticalView from './views/tactical_requisition/TacticalView.vue';
 import MarketingEventIndex from './views/tactical_requisition/marketing_event/Index.vue';
 import MarketingEventCreate from './views/tactical_requisition/marketing_event/Create.vue';
 import MarketingEventEdit from './views/tactical_requisition/marketing_event/Edit.vue';
-import OnlinBankingRequest from './views/expense_&_accounts_payable/online_banking/request_form.vue';
 import AccessChartIndex from './views/access_chart/AccessChartIndex.vue';
 import AccessChartCreate from './views/access_chart/AccessChartCreate.vue';
 import AccessModuleIndex from './views/access_module/AccessModuleIndex.vue';
@@ -118,6 +118,11 @@ const routes = [
         path: '/inventory/breakdown/reconciliation/:inventory_recon_id',
         name: 'inventory.reconciliation.breakdown',
         component: InventoryBreakdown
+      },
+      {
+        path: '/expense_&_accounts_payable/online_banking/request_form',
+        name: 'onlinebanking.request_form',
+        component: OnlineBankingRequest
       },
       {
         path: '/brand/index',
@@ -264,15 +269,6 @@ const routes = [
         name: 'marketing.event.edit',
         component: MarketingEventEdit
       },
-
-
-      {
-        path: '/expense_&_accounts_payable/online_banking/request_form',
-        name: 'onlinebanking.request_form',
-        component: OnlinBankingRequest
-      },
-      
-      
       {
         path: '/access_chart/index',
         name: 'access.chart.index',

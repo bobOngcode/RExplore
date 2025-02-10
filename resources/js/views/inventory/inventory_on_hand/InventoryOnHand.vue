@@ -13,7 +13,13 @@
           <v-card-title class="mb-0 pb-0">
             Inventory On Hand
             <v-spacer></v-spacer>
-            <v-btn class="mx-1 white--text" color="success" width="100px" small @click="exportData()">
+            <v-btn
+              class="mx-1 white--text"
+              color="success"
+              width="100px"
+              small
+              @click="exportData()"
+            >
               <v-icon class="mr-1" small> mdi-microsoft-excel </v-icon>
               Export
             </v-btn>
@@ -24,14 +30,29 @@
               <v-col class="my-0 py-0 mt-2" xs="12" sm="12" md="12" lg="4" xl="4">
                 <v-row>
                   <v-col class="my-0 py-0" xs="12" sm="12" md="12" lg="12" xl="12">
-                    <v-autocomplete :items="productModel.items" v-model="productModel.name" item-text="name"
-                      item-value="name" label="Model" :search-input.sync="productModel.search" required
-                      :error-messages="modelErrors" :loading="model_loading" clearable>
+                    <v-autocomplete
+                      :items="productModel.items"
+                      v-model="productModel.name"
+                      item-text="name"
+                      item-value="name"
+                      label="Model"
+                      :search-input.sync="productModel.search"
+                      required
+                      :error-messages="modelErrors"
+                      :loading="model_loading"
+                      clearable
+                    >
                       <template v-slot:append-outer>
                         <v-tooltip top>
                           <template v-slot:activator="{ on, attrs }">
-                            <v-btn icon @click="searchModel()" color="primary" v-bind="attrs" v-on="on"
-                              :disabled="model_loading || search_loading">
+                            <v-btn 
+                              icon 
+                              @click="searchModel()" 
+                              color="primary" 
+                              v-bind="attrs" 
+                              v-on="on"
+                              :disabled="model_loading || search_loading"
+                            >
                               <v-icon>mdi-magnify</v-icon>
                             </v-btn>
                           </template>
@@ -42,9 +63,13 @@
                         <v-list-item class="ma-0" @click="loadMoreModel()">
                           <v-list-item-content>
                             <v-list-item-title class="blue--text text--darken-2">
-                              <v-icon class="" color="primary" small>mdi-chevron-down</v-icon>
+                              <v-icon class="" color="primary" small
+                                >mdi-chevron-down</v-icon
+                              >
                               <span class="subtitle-2">
-                                LOAD MORE</span></v-list-item-title>
+                                LOAD MORE</span
+                              ></v-list-item-title
+                            >
                           </v-list-item-content>
                         </v-list-item>
                       </template>
@@ -53,14 +78,29 @@
                 </v-row>
                 <v-row>
                   <v-col class="my-0 py-0" xs="12" sm="12" md="12" lg="12" xl="12">
-                    <v-autocomplete :items="productBrand.items" v-model="productBrand.name" item-text="name"
-                      item-value="name" label="Brand" :search-input.sync="productBrand.search" required
-                      :error-messages="modelErrors" :loading="brand_loading" clearable>
+                    <v-autocomplete
+                      :items="productBrand.items"
+                      v-model="productBrand.name"
+                      item-text="name"
+                      item-value="name"
+                      label="Brand"
+                      :search-input.sync="productBrand.search"
+                      required
+                      :error-messages="modelErrors"
+                      :loading="brand_loading"
+                      clearable
+                    >
                       <template v-slot:append-outer>
                         <v-tooltip top>
                           <template v-slot:activator="{ on, attrs }">
-                            <v-btn icon @click="searchBrand()" color="primary" v-bind="attrs" v-on="on"
-                              :disabled="brand_loading || search_loading">
+                            <v-btn 
+                              icon 
+                              @click="searchBrand()" 
+                              color="primary" 
+                              v-bind="attrs" 
+                              v-on="on"
+                              :disabled="brand_loading || search_loading"
+                            >
                               <v-icon>mdi-magnify</v-icon>
                             </v-btn>
                           </template>
@@ -71,9 +111,13 @@
                         <v-list-item class="ma-0" @click="loadMoreBrand()">
                           <v-list-item-content>
                             <v-list-item-title class="blue--text text--darken-2">
-                              <v-icon class="" color="primary" small>mdi-chevron-down</v-icon>
+                              <v-icon class="" color="primary" small
+                                >mdi-chevron-down</v-icon
+                              >
                               <span class="subtitle-2">
-                                LOAD MORE</span></v-list-item-title>
+                                LOAD MORE</span
+                              ></v-list-item-title
+                            >
                           </v-list-item-content>
                         </v-list-item>
                       </template>
@@ -82,14 +126,29 @@
                 </v-row>
                 <v-row>
                   <v-col class="my-0 py-0" xs="12" sm="12" md="12" lg="12" xl="12">
-                    <v-autocomplete :items="productCategory.items" v-model="productCategory.name" item-text="name"
-                      item-value="name" label="Category" :search-input.sync="productCategory.search" required
-                      :error-messages="modelErrors" :loading="category_loading" clearable>
+                    <v-autocomplete
+                      :items="productCategory.items"
+                      v-model="productCategory.name"
+                      item-text="name"
+                      item-value="name"
+                      label="Category"
+                      :search-input.sync="productCategory.search"
+                      required
+                      :error-messages="modelErrors"
+                      :loading="category_loading"
+                      clearable
+                    >
                       <template v-slot:append-outer>
                         <v-tooltip top>
                           <template v-slot:activator="{ on, attrs }">
-                            <v-btn icon @click="searchCategory()" color="primary" v-bind="attrs" v-on="on"
-                              :disabled="category_loading || search_loading">
+                            <v-btn 
+                              icon 
+                              @click="searchCategory()" 
+                              color="primary" 
+                              v-bind="attrs" 
+                              v-on="on"
+                              :disabled="category_loading || search_loading"
+                            >
                               <v-icon>mdi-magnify</v-icon>
                             </v-btn>
                           </template>
@@ -100,9 +159,13 @@
                         <v-list-item class="ma-0" @click="loadMoreCategory()">
                           <v-list-item-content>
                             <v-list-item-title class="blue--text text--darken-2">
-                              <v-icon class="" color="primary" small>mdi-chevron-down</v-icon>
+                              <v-icon class="" color="primary" small
+                                >mdi-chevron-down</v-icon
+                              >
                               <span class="subtitle-2">
-                                LOAD MORE</span></v-list-item-title>
+                                LOAD MORE</span
+                              ></v-list-item-title
+                            >
                           </v-list-item-content>
                         </v-list-item>
                       </template>
@@ -111,21 +174,31 @@
                 </v-row>
                 <v-row class="mt-6">
                   <v-col class="my-0 py-0" xs="12" sm="12" md="12" lg="12" xl="12">
-                    <v-btn color="primary" @click="getInventory()" class="mb-4" :disabled="search_loading">search
-                      product</v-btn>
+                    <v-btn color="primary" @click="getInventory()" class="mb-4" :disabled="search_loading">search product</v-btn>
                     <v-btn color="#E0E0E0" @click="clear()" class="ml-2 mb-4" :disabled="search_loading"> clear </v-btn>
                   </v-col>
                 </v-row>
               </v-col>
               <v-divider vertical></v-divider>
               <v-col>
-                <v-data-table :headers="headers" :items="products" :search="search" :loading="loading"
-                  loading-text="Loading... Please wait" v-if="hasPermission('inventory-on-hand')">
+                <v-data-table
+                  :headers="headers"
+                  :items="products"
+                  :search="search"
+                  :loading="loading"
+                  loading-text="Loading... Please wait"
+                  v-if="hasPermission('inventory-on-hand')"
+                >
                   <template v-slot:top>
                     <v-toolbar flat>
                       <v-spacer></v-spacer>
-                      <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line
-                        hide-details=""></v-text-field>
+                      <v-text-field
+                        v-model="search"
+                        append-icon="mdi-magnify"
+                        label="Search"
+                        single-line
+                        hide-details=""
+                      ></v-text-field>
                       <v-spacer></v-spacer>
                     </v-toolbar>
                   </template>
@@ -143,13 +216,24 @@
             <v-card-title>
               <span class="headline">Select Product</span>
               <v-spacer></v-spacer>
-              <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line></v-text-field>
+              <v-text-field
+                v-model="search"
+                append-icon="mdi-magnify"
+                label="Search"
+                single-line
+              ></v-text-field>
               <v-spacer></v-spacer>
               <v-icon @click="dialog = false">mdi-close</v-icon>
             </v-card-title>
             <v-card-text>
-              <v-data-table :headers="searched_headers" :items="searched_product_list" :search="search"
-                :loading="loading" loading-text="Loading... Please wait" class="elevation-1 ">
+              <v-data-table
+                :headers="searched_headers"
+                :items="searched_product_list"
+                :search="search"
+                :loading="loading"
+                loading-text="Loading... Please wait"
+                class="elevation-1 "
+              > 
                 <template v-slot:item="{ item }">
                   <tr @click="selectProduct(item)" style="cursor: pointer;">
                     <td>
@@ -168,13 +252,24 @@
           </v-card>
         </v-dialog>
         <!-- loader-dialog -->
-        <v-dialog v-model="search_loading" persistent width="300">
-          <v-card color="primary" dark>
+        <v-dialog
+          v-model="search_loading"
+          persistent
+          width="300"
+        >
+          <v-card
+            color="primary"
+            dark
+          >
             <v-card-text>
               <p class="text-center pt-2">
                 Loading. Please wait...
               </p>
-              <v-progress-linear indeterminate color="white" class="mb-0"></v-progress-linear>
+              <v-progress-linear
+                indeterminate
+                color="white"
+                class="mb-0"
+              ></v-progress-linear>
             </v-card-text>
           </v-card>
         </v-dialog>
@@ -230,7 +325,7 @@ export default {
       searched_product_list: [],
       brands: [],
       product_models: [],
-      product_categories: [],
+      product_categories: [],     
       loading: false,
       brand_loading: false,
       model_loading: false,
@@ -291,23 +386,26 @@ export default {
         brand: this.productBrand.name,
         category: this.productCategory.name,
       };
-
+      
       axios.post("/api/product/inventory_on_hand", data).then(
         (response) => {
           let data = response.data;
           this.search_loading = false;
           console.log(data);
-          if (data.multiple_brand_model_category) {
+          if(data.multiple_brand_model_category)
+          {
             this.searched_product_list = data.multiple_brand_model_category;
             this.dialog = true;
           }
-          else {
-            this.products = response.data.products;
+          else
+          {
+            this.products = response.data.products; 
 
-            if (!this.products.length) {
+            if(!this.products.length)
+            {
               this.showAlert('No Record Found', 'warning')
             }
-
+  
             this.productBrand.search = data.brand;
             this.productBrand.name = data.brand;
             this.productBrand.items = [data.brand];
@@ -353,7 +451,7 @@ export default {
             )
             .then(
               (response) => {
-
+        
                 let brands = response.data.brands.data;
                 this.productBrand.last_page = response.data.brands.last_page;
 
@@ -412,7 +510,7 @@ export default {
             )
             .then(
               (response) => {
-
+        
                 let product_models = response.data.product_models.data;
                 this.productModel.last_page = response.data.product_models.last_page;
 
@@ -472,7 +570,7 @@ export default {
             )
             .then(
               (response) => {
-
+        
                 let product_categories = response.data.product_categories.data;
                 this.productCategory.last_page = response.data.product_categories.last_page;
 
@@ -508,7 +606,8 @@ export default {
       this.getProductCategory();
     },
 
-    async selectProduct(item) {
+    async selectProduct(item)
+    {
       this.dialog = false;
       this.productBrand.search = item.brand;
       this.productBrand.items = [item.brand];
@@ -529,23 +628,24 @@ export default {
     },
 
     exportData() {
-      if (this.products.length) {
+      if (this.products.length) 
+      {
         console.log(this.products);
         const data = { products: this.products };
 
-        axios.post('/api/product/export_inventory_on_hand', data, { responseType: 'arraybuffer' })
+        axios.post('/api/product/export_inventory_on_hand', data, { responseType: 'arraybuffer'})
           .then((response) => {
-            var fileURL = window.URL.createObjectURL(new Blob([response.data]));
-            var fileLink = document.createElement('a');
-            fileLink.href = fileURL;
-            fileLink.setAttribute('download', 'InventoryOnHand.xls');
-            document.body.appendChild(fileLink);
-            fileLink.click();
+              var fileURL = window.URL.createObjectURL(new Blob([response.data]));
+              var fileLink = document.createElement('a');
+              fileLink.href = fileURL;
+              fileLink.setAttribute('download', 'InventoryOnHand.xls');
+              document.body.appendChild(fileLink);
+              fileLink.click();
           }, (error) => {
             console.log(error);
           }
-          );
-
+        );
+      
       } else {
         this.showAlert("No record found", "warning")
       }
@@ -578,7 +678,7 @@ export default {
       this.productCategory = Object.assign({}, this.defaultItems);
 
     },
-
+    
     isUnauthorized(error) {
       // if unauthenticated (401)
       if (error.response.status == "401") {
@@ -600,23 +700,18 @@ export default {
       };
     },
   },
-
-
   computed: {
-
-  modelErrors() {
+    modelErrors() {
       const errors = [];
       if (!this.$v.model.$dirty) return errors;
       !this.$v.model.required && errors.push("Model is required.");
       return errors;
     },
-    ...mapGetters("userRolesPermissions", ["hasRole", "hasAnyRole", "hasPermission", "hasAnyPermission"]),
+    ...mapGetters("userRolesPermissions", ["hasRole", "hasAnyRole", "hasPermission","hasAnyPermission"]),
   },
-
   mounted() {
     axios.defaults.headers.common["Authorization"] =
       "Bearer " + localStorage.getItem("access_token");
   },
-  
 };
 </script>

@@ -9,72 +9,105 @@
             </v-breadcrumbs-item>
           </template>
         </v-breadcrumbs>
-        <v-skeleton-loader v-if="skeleton_loading"
+        <v-skeleton-loader
+          v-if="skeleton_loading"
           type="table-heading, table-thead, table-tbody, table-row, table-tfoot"
-          :types="{ 'table-thead': 'heading@8', 'table-tbody': 'table-row-divider@5', 'table-row': 'table-cell@8' }"></v-skeleton-loader>
+          :types=" {'table-thead': 'heading@8', 'table-tbody': 'table-row-divider@5', 'table-row': 'table-cell@8'} "
+        ></v-skeleton-loader>
         <v-card v-if="!skeleton_loading">
           <v-card-title>
             Tactical Requisition Lists
             <v-spacer></v-spacer>
-            <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line
-              v-if="hasPermission('tactical-requisition-list')"></v-text-field>
+            <v-text-field
+              v-model="search"
+              append-icon="mdi-magnify"
+              label="Search"
+              single-line
+              v-if="hasPermission('tactical-requisition-list')"
+            ></v-text-field>
             <template>
               <v-toolbar flat>
                 <v-spacer></v-spacer>
-                <v-btn color="primary" fab dark class="mb-2" @click="createTacticalRequisition()"
-                  v-if="hasPermission('tactical-requisition-create')">
+                <v-btn
+                  color="primary"
+                  fab
+                  dark
+                  class="mb-2"
+                  @click="createTacticalRequisition()"
+                  v-if="hasPermission('tactical-requisition-create')"
+                >
                   <v-icon>mdi-plus</v-icon>
                 </v-btn>
               </v-toolbar>
             </template>
           </v-card-title>
-          <v-data-table :headers="headers" :items="tacticalRequisitions" :search="search" :loading="loading"
-            loading-text="Loading... Please wait" v-if="hasPermission('tactical-requisition-list')">
-           
+          <v-data-table
+            :headers="headers"
+            :items="tacticalRequisitions"
+            :search="search"
+            :loading="loading"
+            loading-text="Loading... Please wait"
+            v-if="hasPermission('tactical-requisition-list')"
+          >
             <template v-slot:item.progress="{ item }">
               <template v-for="(item, index) in item.approval_progress">
-                <v-tooltip top :color="item.status === 'Approved' ? 'success' : item.status === 'Disapproved' ? 'error' : ''" v-if="item.approver.length">
+                
+                <v-tooltip 
+                  top :color=" item.status === 'Approved' ? 'success' : item.status === 'Disapproved' ? 'error' : '' " 
+                  v-if="item.approver.length"
+                >
                   <template v-slot:activator="{ on, attrs }">
-                    <v-icon
-                      :color="item.status === 'Approved' ? 'success' : item.status === 'Disapproved' ? 'error' : ''"
-                      v-bind="attrs" v-on="on">
+                    <v-icon 
+                      :color=" item.status === 'Approved' ? 'success' : item.status === 'Disapproved' ? 'error' : '' " 
+                      v-bind="attrs" v-on="on"
+                    >
                       {{ item.status === 'Disapproved' ? 'mdi-close-circle' : 'mdi-checkbox-marked-circle' }}
                     </v-icon>
                   </template>
                   <span>{{ item.approver.join(', ') }}</span>
                 </v-tooltip>
+                
                 <!-- show check icon without tooltip -->
                 <v-icon v-if="!item.approver.length">mdi-checkbox-marked-circle</v-icon>
+
               </template>
             </template>
-
             <template v-slot:item.status="{ item }">
-              <v-chip :color="item.status === 'Pending'
-                  ? 'warning'
-                  : item.status === 'On Process'
+              <v-chip
+                :color="
+                  item.status === 'Pending'
+                    ? 'warning'
+                    : item.status === 'On Process'
                     ? '#AB47BC'
                     : item.status === 'Approved'
-                      ? 'success'
-                      : 'error'
-                " dark>
+                    ? 'success'
+                    : 'error'
+                "
+                dark
+              >
                 {{ item.status }}
               </v-chip>
             </template>
-
             <template v-slot:item.actions="{ item }">
-
-              <v-icon small class="mr-2" color="info" @click="viewTacticalRequisition(item)"
-                v-if="hasAnyPermission('tactical-requisition-edit', 'tactical-requisition-approve')">
+              <v-icon
+                small
+                class="mr-2"
+                color="info"
+                @click="viewTacticalRequisition(item)"
+                v-if="hasAnyPermission('tactical-requisition-edit', 'tactical-requisition-approve')"
+              >
                 mdi-eye
               </v-icon>
 
-              <v-icon small color="red" @click="showConfirmAlert(item)"
-                v-if="hasPermission('tactical-requisition-delete')">
+              <v-icon
+                small
+                color="red"
+                @click="showConfirmAlert(item)"
+                v-if="hasPermission('tactical-requisition-delete')"
+              >
                 mdi-delete
               </v-icon>
-
             </template>
-
           </v-data-table>
         </v-card>
       </v-main>
@@ -135,17 +168,15 @@ export default {
   },
 
   methods: {
-
-
     getTacticalRequisition() {
       this.loading = true;
       axios.get("/api/tactical_requisition/index").then(
         (response) => {
 
           console.log(response.data);
-
+          
           let data = response.data
-
+        
           this.tactical_requisitions = data.tactical_requisitions;
           this.approval_progress = data.approval_progress
 
@@ -158,14 +189,12 @@ export default {
       );
     },
 
-
     viewTacticalRequisition(item) {
       this.$router.push({
         name: "tactical.view",
         params: { tactical_requisition_id: item.id },
       });
     },
-
 
     deleteTacticalRequisition(tactical_requisition_id) {
       const data = { tactical_requisition_id: tactical_requisition_id };
@@ -185,7 +214,6 @@ export default {
       );
     },
 
-
     showAlert() {
       this.$swal({
         position: "center",
@@ -195,7 +223,6 @@ export default {
         timer: 2500,
       });
     },
-
 
     showConfirmAlert(item) {
       this.$swal({
@@ -232,11 +259,9 @@ export default {
       });
     },
 
-
     createTacticalRequisition() {
       this.$router.push({ name: "tactical.create" });
     },
-
 
     isUnauthorized(error) {
       // if unauthenticated (401)
@@ -244,7 +269,6 @@ export default {
         this.$router.push({ name: "unauthorize" });
       }
     },
-
 
     websocket() {
       // Socket.IO fetch data
@@ -259,19 +283,16 @@ export default {
         }
       };
     },
-
-    
   },
-
-
   computed: {
-
-    tacticalRequisitions() {
+    tacticalRequisitions()
+    {
       let tactical_requisitions = [];
       this.tactical_requisitions.forEach((value, i) => {
         tactical_requisitions.push(value);
         this.approval_progress.forEach((val) => {
-          if (value.id === val.tactical_requisition_id) {
+          if(value.id === val.tactical_requisition_id)
+          {
             tactical_requisitions[i]['approval_progress'] = val.progress;
           }
         });
@@ -279,9 +300,7 @@ export default {
 
       return tactical_requisitions;
     },
-
     ...mapGetters("userRolesPermissions", ["hasRole", "hasAnyRole", "hasPermission", "hasAnyPermission"]),
-
   },
   mounted() {
     axios.defaults.headers.common["Authorization"] =

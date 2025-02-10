@@ -39,20 +39,11 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-
-    public function e_signature()
-    {
-        return $this->hasOne('App\UserSignature', 'user_id', 'id');
-        //                 ( <Model>, <id_of_specified_Model>, <id_of_this_model> )
-    }
-
-
     public function branch()
     {
         return $this->hasOne('App\Branch', 'id', 'branch_id');
         //                 ( <Model>, <id_of_specified_Model>, <id_of_this_model> )
     }
-
 
     public function position()
     {
@@ -60,11 +51,15 @@ class User extends Authenticatable
         //                 ( <Model>, <id_of_specified_Model>, <id_of_this_model> )
     }
 
-
     public function access_chart_user_maps () {
         return $this->belongsToMany('App\AccessChart', 'access_chart_user_maps', 'user_id', 'access_chart_id');
     }
 
+    public function e_signature()
+    {
+        return $this->hasOne('App\UserSignature', 'user_id', 'id');
+        //                 ( <Model>, <id_of_specified_Model>, <id_of_this_model> )
+    }
 
     public function online_banking()
     {   

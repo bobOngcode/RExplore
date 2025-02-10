@@ -16,10 +16,7 @@ class ApprovedLog extends Model
     public function approver()
     {
         return $this->hasOne('App\User', 'id', 'approver_id');
-        // ( <Model>, <id_of_specified_Model>, <id_of_this_model> )
+        //                 ( <Model>, <id_of_specified_Model>, <id_of_this_model> )
     }
-
-
-
 
 }

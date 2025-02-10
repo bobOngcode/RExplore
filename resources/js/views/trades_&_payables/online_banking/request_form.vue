@@ -1,7 +1,7 @@
 <template>
   <div class="flex column">
     <div id="_wrapper" class="pa-5">
-
+    
       <v-main>
 
 
@@ -41,7 +41,7 @@
 
           </v-card-title>
 
-
+          
           <!-- <v-toolbar class="m-3 mt-5" flat>
             <template>
               <v-tabs v-model="tab" bg-color="indigo-darken-2" color="black">
@@ -65,11 +65,9 @@
             </v-toolbar>
           </template>
 
-          
-
           <v-tabs-items v-model="tab">
 
-            <!-- <v-tab-item>
+            <v-tab-item>
 
               <v-data-table class="p-3" :headers="headers" :items="PendingRequest" :loading="loading" :search="search">
 
@@ -127,19 +125,16 @@
                     v-if="hasAnyPermission('online-banking-edit', 'online-banking-approve')">
                     mdi-eye
                   </v-icon>
-                  <v-icon small class="mr-2" @click="deleterequest(item)" color="red"
-                    v-if="hasAnyPermission('online-banking-delete')">
-                    mdi-delete
-                  </v-icon>
                 </template>
 
 
               </v-data-table>
 
-            </v-tab-item> -->
+            </v-tab-item>
 
 
-            <!-- <v-tab-item>
+
+            <v-tab-item>
 
               <v-data-table class="p-3" :headers="headers" :items="OnprocessRequest" :loading="loading"
                 :search="search">
@@ -198,18 +193,16 @@
                     v-if="hasAnyPermission('online-banking-edit', 'online-banking-approve')">
                     mdi-eye
                   </v-icon>
-                  <v-icon small class="mr-2" @click="deleterequest(item)" color="red"
-                    v-if="hasAnyPermission('online-banking-delete')">
-                    mdi-delete
-                  </v-icon>
                 </template>
 
-
+                
               </v-data-table>
 
-            </v-tab-item> -->
+            </v-tab-item>
 
-            <!-- <v-tab-item>
+
+
+            <v-tab-item>
 
               <v-data-table class="p-3" :headers="headers" :items="ApprovedRequest" :loading="loading" :search="search">
 
@@ -267,11 +260,11 @@
                 </template>
 
               </v-data-table>
-
-            </v-tab-item> -->
+              
+            </v-tab-item>
 
             <v-tab-item>
-              <v-data-table class="p-3" :headers="headers" :items="table_items" :loading="loading"
+              <v-data-table class="p-3" :headers="headers" :items="DisapprovedRequest" :loading="loading"
                 :search="search">
 
                 <template v-slot:[`item.count`]="{ item, index }">
@@ -567,11 +560,12 @@
                           <v-text-field v-model="form_request.auth_id" :readonly="readonly"
                             :error-messages="auth_idErrors + bankingError.auth_id"
                             @input="$v.form_request.auth_id.$touch() + (bankingError.auth_id = [])"
-                            @blur="$v.form_request.auth_id.$touch()" name="text" @keypress="intNumValFilter()"
+                            @blur="$v.form_request.auth_id.$touch()" name="text"
+                            @keypress="intNumValFilter()"
                             label="Authenticator ID *">
                           </v-text-field>
                         </v-col>
-
+                        
                       </v-row>
                     </v-col>
 
@@ -693,7 +687,7 @@
                         <input ref="fileInput" name="banner" type="file" accept="image/*" style="display: none"
                           @change="imgSrc" />
 
-
+                          
                         <template>
                           <u class="mt-3">
                             ___{{ username }}___
@@ -702,6 +696,15 @@
 
                       </template>
                       <template v-else>
+
+                        <v-btn  color="white" class="w-auto m-1 mt-3"
+                          :class="{ 'text-danger': e_signatureErrors + bankingError.e_signature }"
+                          :error-messages="e_signatureErrors + bankingError.e_signature"
+                          @input="$v.form_request.e_signature.$touch() + (bankingError.e_signature = [])"
+                          @onchange="e_signatureErrors" @blur="$v.form_request.e_signature.$touch()"
+                          @click="triggerFileInput">
+                          Deelete User E-Signature
+                        </v-btn>
                         <b>
                           <u>
                             ___{{ username }}___
@@ -717,10 +720,9 @@
               </template>
 
 
-              <template
-                v-if="(form_status === 'Disapproved' && hasPermission('online-banking-create')) || (user_approve_lvl != 0 && form_status === 'Disapproved')">
+              <template v-if="(form_status === 'Disapproved' && hasPermission('online-banking-create')) || (user_approve_lvl != 0 && form_status === 'Disapproved')">
                 <hr>
-
+                
                 <v-container fluid class="p-5 text-center">
                   <v-row>
                     <v-col cols="12" sm="12">
@@ -733,55 +735,8 @@
               </template>
 
 
-              <!-- <template>
-                                <hr>
-                                <v-container fluid class="p-5">
-                                    <p>For official use:</p>
-                                    <br>
-                                    <v-row>
-                                        <v-col :cols="12" :md="6">
-                                            <p>Verified by: _____________________________</p>
-                                        </v-col>
-                                        <v-col :cols="12" :md="6">
-                                            <p>201Filed by Hr:<span class="tab"></span> _____________________________
-                                            </p>
-                                        </v-col>
-                                        <v-col :cols="12" :md="2">
-                                            <p>Recommended by:</p>
-                                        </v-col>
-                                        <v-col :cols="12" :md="5">
-                                            <center>
-                                                <p> _____________________________</p>
-                                                <p>FDH</p>
-                                            </center>
-                                        </v-col>
-                                        <v-col :cols="12" :md="5">
-                                            <center>
-                                                <p>_____________________________</p>
-                                                <p>GM</p>
-                                            </center>
-                                        </v-col>
-                                        <v-col :cols="12" :md="2">
-                                            <p>Approved by:</p>
-                                        </v-col>
-                                        <v-col :cols="12" :md="5">
-                                            <center>
-                                                <p> _____________________________</p>
-                                                <p>SDC</p>
-                                            </center>
-                                        </v-col>
-                                        <v-col :cols="12" :md="5">
-                                            <center>
-                                                <p>_____________________________</p>
-                                                <p>SCC</p>
-                                            </center>
-                                        </v-col>
-                                    </v-row>
-                                </v-container>
-                            </template> -->
-
-
             </v-card-text>
+
 
             <v-card-actions>
               <v-spacer></v-spacer>
@@ -1000,7 +955,7 @@ export default {
   data() {
 
     return {
-     
+
       active_tab: 0,
       status: '',
       user_approve_lvl: 0,
@@ -1025,8 +980,6 @@ export default {
       onprocess_approval_progress: [],
       approved_approval_progress: [],
       disapproved_approval_progress: [],
-      
-      table_items: this.pendings,
 
 
       RemarksError:
@@ -1245,49 +1198,6 @@ export default {
   methods: {
 
 
-    deleterequest(item) {
-      this.$swal({
-        title: "Delete Request?",
-        text: "Youre about to delete this record.",
-        icon: "question",
-        showCancelButton: true,
-        confirmButtonColor: "red",
-        cancelButtonColor: "#6c757d",
-        confirmButtonText: "<span style='color: white;'>Yes, Delete it</span>",
-        cancelButtonText: "<span style='color: white;'>Cancel</span>",
-      }).then((result) => {
-        if (result.value) {
-          const data = { id: item.id };
-          this.loading = true;
-          axios.post("/api/onlinebanking/delete", data).then(
-            (response) => {
-              this.loading = false;
-              this.dialog = false;
-              this.$swal.fire({
-                icon: "success",
-                title: "Request Deleted",
-                text: "Request deleted successfully",
-                toast: true,
-                position: "top-end",
-                showConfirmButton: false,
-                timer: 2000,
-                timerProgressBar: true,
-              });
-              this.getBankingRequest();
-            },
-            (error) => {
-              this.isUnauthorized(error);
-            }
-          );
-
-
-        }
-      });
-
-    },
-
-
-
     download() {
 
       const formData = new FormData();
@@ -1317,6 +1227,7 @@ export default {
       html2pdf().set(opt).from(element).save();
 
     },
+
 
 
     closeremarks() {
@@ -1350,17 +1261,17 @@ export default {
       axios.post("/api/onlinebanking/disapprove", data)
         .then((response) => {
           this.loading = false;
-
+          
           if (response.data.remarks) {
             this.RemarksError.remarks = response.data.remarks[0];
-          }
+          } 
           else {
             this.reamrks_dialog = false;
             this.dialog = false;
             this.getBankingRequest();
             this.$swal({
               icon: "success",
-              title: "Record has been DISAPPROVED",
+              title: "Record has been DISAPPROVED", 
               text: "Request Disapproved successfully",
               toast: true,
               position: "top-end",
@@ -1404,7 +1315,7 @@ export default {
     },
 
 
-    // for switch icon in banking request
+    // for switch icon in baking request
     update_status() {
       if (!this.form_request.update_status) {
         this.form_request.bank = '';
@@ -1421,7 +1332,6 @@ export default {
     },
 
 
-
     showAlert(msg) {
       this.$swal({
         position: "center",
@@ -1432,7 +1342,6 @@ export default {
         timer: 2500,
       });
     },
-
 
 
     // clearing properties of elements
@@ -1485,7 +1394,6 @@ export default {
         e_signature: [],
       };
     },
-
 
 
     // closing the dialog window 
@@ -1716,7 +1624,7 @@ export default {
           this.onlinebankings = data.bankingrequest;
 
           this.pendings = data.pendings;
-
+          
           this.onprocess = data.onprocess;
           this.approves = data.approves;
           this.disapproves = data.disapproves;
@@ -1724,7 +1632,7 @@ export default {
           this.approval_progress = data.approval_progress;
 
           this.pending_approval_progress = data.pending_approval_progress;
-
+          
           this.onprocess_approval_progress = data.onprocess_approval_progress;
           this.approved_approval_progress = data.approved_approval_progress;
           this.disapproved_approval_progress = data.disapproved_approval_progress;
@@ -1818,7 +1726,7 @@ export default {
       if (this.form_status == "Disapproved") {
         // this.readonly =  false;
         // this.readonly = this.user_approve_lvl != 0 ? true : false;
-        this.readonly = this.user_approve_lvl === null ? false : true;
+        this.readonly = this.user_approve_lvl === null? false : true;
         this.disabled_deletion = this.user_approve_lvl != 0 ? true : item.formtype === 'FOR DELETION' ? false : true;
         this.disabled_maker = this.user_approve_lvl != 0 ? true : item.formtype === 'NEW MAKER' ? false : true;
         this.disabled_verifier = this.user_approve_lvl != 0 ? true : item.formtype === 'NEW VERIFIER' ? false : true;
@@ -1909,28 +1817,14 @@ export default {
       evt = (evt) ? evt : window.event;
       let value = evt.target.value.toString() + evt.key.toString();
 
-      if (!/^[-+]?[0-9]*\.?[0-9]*$/.test(value)) {
+      if (!/^[-+]?[0-9]*?[0-9]*$/.test(value)) {
         evt.preventDefault();
       }
-      else if (value.indexOf(".") > -1) {
-        let split_val = value.split('.');
-        let whole_num = split_val[0];
-        let decimal_places = split_val[1];
-        let whole_num_length = whole_num.length
-        let decimal_length = decimal_places.length;
-
-        if (decimal_length > 2) //decimal places limit 2
-        {
-          evt.preventDefault();
-        }
-
-      } else {
+      else {
 
         return true;
       }
     },
-
-
 
     isUnauthorized(error) {
       // if unauthenticated (401)
@@ -1941,19 +1835,19 @@ export default {
 
 
 
-    // websocket() {
-    //   // Socket.IO fetch data
-    //   this.$options.sockets.sendData = (data) => {
-    //     let action = data.action;
-    //     if (
-    //       action == "online-banking-create" ||
-    //       action == "online-banking-edit" ||
-    //       action == "online-banking-delete"
-    //     ) {
-    //       this.getBankingRequest();
-    //     }
-    //   };
-    // },
+    websocket() {
+      // Socket.IO fetch data
+      this.$options.sockets.sendData = (data) => {
+        let action = data.action;
+        if (
+          action == "tactical-requisition-create" ||
+          action == "tactical-requisition-edit" ||
+          action == "tactical-requisition-delete"
+        ) {
+          this.getBankingRequest();
+        }
+      };
+    },
 
 
 
@@ -1961,24 +1855,6 @@ export default {
 
 
   computed: {
-
-    filtertabs(){
-    if(this.active_tab === 0) {
-      this.table_items = this.pendings;
-    }
-
-    else if(this.active_tab === 1) {
-      this.table_items = this.onprocess;
-    }
-
-    if(this.active_tab === 2) {
-      this.table_items = this.approves;
-    }
-
-    if(this.active_tab === 3) {
-      this.table_items = this.disapproves;
-    }
-    },
 
     reamrks() {
 
@@ -2250,7 +2126,7 @@ export default {
     axios.defaults.headers.common["Authorization"] =
       "Bearer " + localStorage.getItem("access_token");
     this.getBankingRequest();
-
+   
     // this.websocket();
 
   },
@@ -2260,9 +2136,9 @@ export default {
     tab(newTab) {
       this.active_tab = newTab;
       // this.navigations = this.user_approve_lvl === null || this.user_approve_lvl === 0 ? ['Request', 'On Process', 'Approved', 'Disapproved'] : ['Pending Request', 'On Process', 'Approved', 'Disapproved'];
-    },
+         },
 
-
+    
   }
 
 

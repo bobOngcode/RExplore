@@ -10,8 +10,17 @@
           <v-container>
             <v-row>
               <v-col class="my-0 py-0">
-                <v-file-input v-model="file" show-size label="File input" prepend-icon="mdi-paperclip" required multiple
-                  :error-messages="fileErrors" @input="$v.file.$touch()" @blur="$v.file.$touch()">
+                <v-file-input
+                  v-model="file"
+                  show-size
+                  label="File input"
+                  prepend-icon="mdi-paperclip"
+                  required
+                  multiple
+                  :error-messages="fileErrors"
+                  @input="$v.file.$touch()"
+                  @blur="$v.file.$touch()"
+                >
                   <template v-slot:selection="{ index, text }">
                     <v-chip small label color="primary" close @click:close="removeFile(index, text)">
                       {{ text }}
@@ -32,7 +41,11 @@
           >
             Close
           </v-btn> -->
-          <v-btn color="primary" class="mb-3 mr-4" @click="closeDialog()">
+          <v-btn
+            color="primary"
+            class="mb-3 mr-4"
+            @click="closeDialog()"
+          >
             OK
           </v-btn>
         </v-card-actions>
@@ -41,53 +54,53 @@
   </div>
 </template>
 <script>
-import { required, requiredIf } from "vuelidate/lib/validators";
-export default {
-  name: "AttachFileDialog",
-  props: ['attachment_required', 'dialog', 'fileIsRequired'],
-  validations: {
-    // file: { required },
-    file: {
-      required: requiredIf(function () {
-        return this.fileIsRequired;
-      }),
+  import { required, requiredIf } from "vuelidate/lib/validators";
+  export default {
+    name: "AttachFileDialog",
+    props: ['attachment_required', 'dialog', 'fileIsRequired'],
+    validations: {
+      // file: { required },
+      file: {
+        required: requiredIf(function () {
+          return this.fileIsRequired;
+        }),
+      },
     },
-  },
-  data() {
-    return {
-      file: [],
+    data() {
+      return {
+        file: [],
+      }
+    },
+    methods: {
+      closeDialog() {
+        this.$emit('closeAttachFileDialog');
+      },
+      removeFile(index, text) {
+        this.file.splice(index, 1)
+      },
+      resetData() {
+        this.$v.$reset();
+        this.file = [];
+      }
+    },
+    computed: {
+      fileErrors() {
+        // if(this.fileIsRequired)
+        // {
+        //   if(this.$v.editedItem.file.$dirty)
+        //   { 
+        //     return "Attachment is required!";
+        //   }
+        // }
+        const errors = [];
+        
+        if (!this.$v.file.$dirty) return errors;
+        !this.$v.file.required &&
+          errors.push("Attachment is required!");
+        
+        return errors;
+        
+      },
     }
-  },
-  methods: {
-    closeDialog() {
-      this.$emit('closeAttachFileDialog');
-    },
-    removeFile(index, text) {
-      this.file.splice(index, 1)
-    },
-    resetData() {
-      this.$v.$reset();
-      this.file = [];
-    }
-  },
-  computed: {
-    fileErrors() {
-      // if(this.fileIsRequired)
-      // {
-      //   if(this.$v.editedItem.file.$dirty)
-      //   { 
-      //     return "Attachment is required!";
-      //   }
-      // }
-      const errors = [];
-
-      if (!this.$v.file.$dirty) return errors;
-      !this.$v.file.required &&
-        errors.push("Attachment is required!");
-
-      return errors;
-
-    },
   }
-}
 </script>
